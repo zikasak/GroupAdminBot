@@ -22,7 +22,7 @@ public class BotUtils {
 
     public static boolean isUserAdmin(AbsSender sender, Chat chat, User user) throws TelegramApiException {
         ChatMember chatMember = getChatMember(sender, chat, user);
-        return chatMember.getIsAnonymous() || chatMember.getStatus().equals("administrator") || chatMember.getStatus().equals("creator");
+        return chatMember.getUser().getId() == 1087968824 || chatMember.getIsAnonymous() != null|| chatMember.getStatus().equals("administrator") || chatMember.getStatus().equals("creator");
     }
 
     public static Message sendMessage(AbsSender sender, Chat chat, String text) throws TelegramApiException {
@@ -56,11 +56,14 @@ public class BotUtils {
     }
 
     public static void deleteMessage(AbsSender sender, Message message) throws TelegramApiException {
-        if (!canDeleteMessages(sender, message.getChat(), message.getFrom()))
+        deleteMessage(sender, message, message.getFrom());
+    }
+
+    public static void deleteMessage(AbsSender sender, Message message, User user) throws TelegramApiException {
+        if (!canDeleteMessages(sender, message.getChat(), user))
             return;
         DeleteMessage deleteMessage = new DeleteMessage(message.getChatId().toString(), message.getMessageId());
         sender.execute(deleteMessage);
-
     }
 
     public static void banUser(AbsSender sender, Chat chat, User user) throws TelegramApiException {
@@ -93,7 +96,7 @@ public class BotUtils {
 
     public static boolean canDeleteMessages(AbsSender sender, Chat chat, User user) throws TelegramApiException {
         ChatMember chatMember = getChatMember(sender, chat, user);
-        return chatMember.getCanDeleteMessages();
+        return chatMember.getCanDeleteMessages() != null && chatMember.getCanDeleteMessages();
     }
 
     private static ChatMember getChatMember(AbsSender sender, Chat chat, User user) throws TelegramApiException {

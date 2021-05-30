@@ -13,8 +13,7 @@ public class PinnedMessageParameterReplacer implements IParameterReplacer {
     }
 
     @Override
-    public String replaceWith(String text, Message message, User user) {
-        Chat chat = message.getChat();
+    public String replaceWith(String text, Chat chat, User user) {
         Integer pinnedId = chat.getPinnedMessage().getMessageId();
         String userName = chat.getUserName();
         String replacement = "https://t.me/%s/%d".formatted(userName, pinnedId);

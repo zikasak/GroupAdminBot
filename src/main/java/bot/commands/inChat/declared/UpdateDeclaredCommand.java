@@ -7,8 +7,11 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.util.Arrays;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class UpdateDeclaredCommand extends DeclaredCommand {
@@ -19,17 +22,11 @@ public class UpdateDeclaredCommand extends DeclaredCommand {
     }
 
     @Override
-    public void execute(AbsSender sender, TGroup tGroup, Message message) {
+    public void execute(AbsSender sender, TGroup tGroup, Message message, String[] strings) throws TelegramApiException {
         Chat chat = message.getChat();
         Set<TDeclaredCommand> command = tGroup.getCommand();
-        Pair<String, String> commandPair = this.parseCommand(message.getText());
-        if (commandPair == null) return;
-        TDeclaredCommand tDeclaredCommand = new TDeclaredCommand(chat, commandPair.getFirst(), commandPair.getSecond());
-        for (TDeclaredCommand cmd : command) {
-            if (cmd.equals(tDeclaredCommand)) {
-                cmd.setCommand_text(commandPair.getSecond());
-            }
-        }
-        this.chatRep.save(tGroup);
+        String commandText = Arrays.stream(strings).skip(1).collect(Collectors.joining(" "));
+        TDeclaredCommand tDeclaredCommand = new TDeclaredCommand(chat, strings[0], commandText);
+        this.service.save(tDeclaredCommand);
     }
 }

@@ -10,27 +10,25 @@ import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.util.Arrays;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class DeleteDeclaredCommand extends DeclaredCommand {
-
-    @Autowired
-    private ChatRep chatRep;
 
     public DeleteDeclaredCommand() {
         super("delete", true, true, true);
     }
 
     @Override
-    @Transactional
-    public void execute(AbsSender sender, TGroup tGroup, Message message) {
+    public void execute(AbsSender sender, TGroup tGroup, Message message, String[] strings) throws TelegramApiException {
         Chat chat = message.getChat();
         Set<TDeclaredCommand> command = tGroup.getCommand();
-        Pair<String, String> commandPair = this.parseCommand(message.getText());
-        TDeclaredCommand tDeclaredCommand = new TDeclaredCommand(chat, commandPair.getFirst(), null);
-        command.remove(tDeclaredCommand);
-        chatRep.save(tGroup);
+        String commandText = Arrays.stream(strings).skip(1).collect(Collectors.joining(" "));
+        TDeclaredCommand tDeclaredCommand = new TDeclaredCommand(chat, strings[0], null);
+        this.service.delete(tDeclaredCommand);
     }
 }

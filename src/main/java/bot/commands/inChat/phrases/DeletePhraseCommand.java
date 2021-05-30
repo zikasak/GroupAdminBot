@@ -17,15 +17,12 @@ public class DeletePhraseCommand extends PhraseCommand {
     }
 
     @Override
-    public void execute(AbsSender sender, TGroup chat, Message message) throws TelegramApiException {
-        Set<TBlockedPhrase> blockedPhrases = chat.getBlockedPhrases();
+    public void execute(AbsSender sender, TGroup tGroup, Message message, String[] strings) throws TelegramApiException {
         TBlockedPhrase tBlockedPhrase = new TBlockedPhrase();
         TBlockedPhraseID tBlockedPhraseID = new TBlockedPhraseID();
         tBlockedPhraseID.setBlocked_phrase(message.getText());
-        tBlockedPhraseID.setChat_id(chat.getChat_id());
+        tBlockedPhraseID.setChat_id(tGroup.getChat_id());
         tBlockedPhrase.setId(tBlockedPhraseID);
-        if (!blockedPhrases.remove(tBlockedPhrase))
-            return;
-        this.chatRep.save(chat);
+        this.service.delete(tBlockedPhrase);
     }
 }

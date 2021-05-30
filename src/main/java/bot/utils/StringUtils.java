@@ -4,6 +4,7 @@ package bot.utils;
 import bot.utils.replacers.IParameterReplacer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
@@ -20,9 +21,8 @@ public class StringUtils {
     @Autowired
     private ParameterReplacerFactory parameterReplacerFactory;
 
-    public String fillParams(Message message, User user ) {
+    public String fillParams(String text, Chat chat, User user ) {
         List<String> params = new LinkedList<>();
-        String text = message.getText();
         Pattern compile = Pattern.compile("\\{\\$\\S+}");
         Matcher matcher = compile.matcher(text);
         for (int i = 0; i < matcher.groupCount(); i++) {
@@ -31,7 +31,7 @@ public class StringUtils {
         }
         for (var param: params) {
             IParameterReplacer iParameterReplacer = parameterReplacerFactory.getReplacer(param);
-            text = iParameterReplacer.replaceWith(text, message, user);
+            text = iParameterReplacer.replaceWith(text, chat, user);
         }
         return text;
     }

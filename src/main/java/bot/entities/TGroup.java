@@ -2,6 +2,7 @@ package bot.entities;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.hibernate.annotations.NotFound;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 
 import javax.persistence.*;
@@ -40,11 +41,13 @@ public class TGroup implements Serializable {
 
     @ManyToMany(fetch = FetchType.LAZY)
     private Set<TGroupAdmin> admins;
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<TDeclaredCommand> command;
-    @OneToMany(mappedBy = "id.chat_id", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "id.chat_id", fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<TMutedUser> mutedUsers;
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(name = "chat_id")
     private Set<TBlockedPhrase> blockedPhrases;
+
 
 }

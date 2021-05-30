@@ -19,7 +19,7 @@ public class GetCommandsCommand extends InChatBotCommand {
     }
 
     @Override
-    public void execute(AbsSender sender, TGroup tGroup, Message message) throws TelegramApiException {
+    public void execute(AbsSender sender, TGroup tGroup, Message message, String[] strings) throws TelegramApiException {
         Chat chat = message.getChat();
         String commandString = "Команды для чата %s \n".formatted(chat.getTitle());
         Optional<String> commands = tGroup.getCommand().stream()
@@ -27,7 +27,7 @@ public class GetCommandsCommand extends InChatBotCommand {
                 .reduce((fst, snd) -> fst + "\n" + snd);
         commandString += commands.orElse("");
         Chat userChat = new Chat();
-        userChat.setId(Long.valueOf(message.getFrom().getId()));
+        userChat.setId(message.getFrom().getId());
         BotUtils.sendMessage(sender, userChat, commandString);
     }
 }

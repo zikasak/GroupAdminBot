@@ -22,7 +22,7 @@ import java.util.Set;
     @ManyToOne(fetch = FetchType.LAZY)
     private TGroup group;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private Set<TTimeExceededMessage> time_messages;
 
     @Override

@@ -1,21 +1,19 @@
 package bot.commands.inChat;
 
-import bot.BotUtils;
 import bot.entities.TGroup;
 import bot.reps.ChatRep;
+import bot.services.InChatBotCommandService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.IBotCommand;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.util.Optional;
 
 public abstract class InChatBotCommand implements IBotCommand {
 
     @Autowired
-    protected ChatRep chatRep;
+    protected InChatBotCommandService service;
 
     protected boolean rightsNeeded;
     protected boolean deleteAfterUse;
@@ -40,24 +38,15 @@ public abstract class InChatBotCommand implements IBotCommand {
     }
 
     @Override
-    @Transactional
     public void processMessage(AbsSender absSender, Message message, String[] strings) {
         try {
-            String text = message.getText();
-            String replace = text.replace("/" + this.commandName + " ", "");
-            message.setText(replace);
-            Optional<TGroup> chat = this.chatRep.findById(message.getChatId());
-            if (!this.rightsNeeded && chat.isPresent() == this.chatCheckParam)
-                this.execute(absSender, chat.orElse(null), message);
-            if (this.deleteAfterUse){
-                BotUtils.deleteMessage(absSender, message);
-            }
+            this.service.processMessage(absSender, message, strings, this);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
     }
 
-    public abstract void execute(AbsSender sender, TGroup chat, Message message) throws TelegramApiException;
+    public abstract void execute(AbsSender sender, TGroup chat, Message message, String[] strings) throws TelegramApiException;
 
     public boolean isRightsNeeded() {
         return rightsNeeded;
@@ -65,5 +54,9 @@ public abstract class InChatBotCommand implements IBotCommand {
 
     public boolean isDeleteAfterUse() {
         return deleteAfterUse;
+    }
+
+    public boolean isChatCheckParam() {
+        return chatCheckParam;
     }
 }

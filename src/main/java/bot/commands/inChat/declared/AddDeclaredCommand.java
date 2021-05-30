@@ -8,8 +8,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.util.Arrays;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class AddDeclaredCommand extends DeclaredCommand{
@@ -19,13 +22,11 @@ public class AddDeclaredCommand extends DeclaredCommand{
     }
 
     @Override
-    @Transactional
-    public void execute(AbsSender sender, TGroup tChat, Message message) {
+    public void execute(AbsSender sender, TGroup tGroup, Message message, String[] strings) throws TelegramApiException {
         Chat chat = message.getChat();
-        Set<TDeclaredCommand> command = tChat.getCommand();
-        Pair<String, String> commandPair = this.parseCommand(message.getText());
-        if (commandPair == null || !command.add(new TDeclaredCommand(chat, commandPair.getFirst(), commandPair.getSecond())))
-            return;
-        this.chatRep.save(tChat);
+        Set<TDeclaredCommand> command = tGroup.getCommand();
+        String commandText = Arrays.stream(strings).skip(1).collect(Collectors.joining(" "));
+        TDeclaredCommand tDeclaredCommand = new TDeclaredCommand(chat, strings[0], commandText);
+        this.service.save(tDeclaredCommand);
     }
 }

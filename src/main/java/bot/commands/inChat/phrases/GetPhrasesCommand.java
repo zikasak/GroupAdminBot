@@ -13,13 +13,13 @@ import java.util.stream.Collectors;
 
 @Component
 public class GetPhrasesCommand extends PhraseCommand {
-    public GetPhrasesCommand(String commandName, boolean rightsNeeded, boolean deleteAfterUse, boolean chatCheckParam, String postfix) {
+    public GetPhrasesCommand() {
         super("get", true, true, true, "s");
     }
 
     @Override
-    public void execute(AbsSender sender, TGroup chat, Message message) throws TelegramApiException {
-        Set<TBlockedPhrase> blockedPhrases = chat.getBlockedPhrases();
+    public void execute(AbsSender sender, TGroup tGroup, Message message, String[] strings) throws TelegramApiException {
+        Set<TBlockedPhrase> blockedPhrases = tGroup.getBlockedPhrases();
         if (blockedPhrases.isEmpty()) {
             BotUtils.sendMessage(sender, message.getChat(), "Нет запрещенных фраз");
             return;

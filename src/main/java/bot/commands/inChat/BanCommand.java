@@ -14,7 +14,7 @@ public class BanCommand extends InChatBotCommand {
     }
 
     @Override
-    public void execute(AbsSender sender, TGroup chat, Message message) throws TelegramApiException {
+    public void execute(AbsSender sender, TGroup tGroup, Message message, String[] strings) throws TelegramApiException {
         BotUtils.banUser(sender, message.getChat(), message.getReplyToMessage().getFrom());
     }
 }

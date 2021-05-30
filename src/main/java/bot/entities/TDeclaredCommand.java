@@ -1,11 +1,6 @@
 package bot.entities;
 
-import org.telegram.telegrambots.extensions.bots.commandbot.commands.IBotCommand;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Chat;
-import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.bots.AbsSender;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -32,7 +27,7 @@ public class TDeclaredCommand implements Serializable {
     private TGroup group;
 
     public long  getChat_id() {
-        return this.id.getChat_id();
+        return this.id.getChatId();
     }
 
     public String getCommand() {

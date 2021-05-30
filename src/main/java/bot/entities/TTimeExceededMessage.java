@@ -21,10 +21,10 @@ public class TTimeExceededMessage implements Serializable {
         this.user_id = mutedUser.getId().getUser_id();
     }
 
-    @Column(name = "chat_id")
+    @Column(name = "chat_id", nullable = false, insertable = false)
     @Id
     private long chat_id;
-    @Column(name = "user_id")
+    @Column(name = "user_id", nullable = false, insertable = false)
     @Id
     private long user_id;
     @Column(name = "message_id")
@@ -32,9 +32,9 @@ public class TTimeExceededMessage implements Serializable {
     private long message_id;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumns({
-            @JoinColumn(name = "user_id", nullable = false, insertable = false),
-            @JoinColumn(name = "chat_id", nullable = false, insertable = false)
+    @PrimaryKeyJoinColumns({
+            @PrimaryKeyJoinColumn(name = "user_id", referencedColumnName = "user_id"),
+            @PrimaryKeyJoinColumn(name = "chat_id", referencedColumnName = "chat_id")
     })
     private TMutedUser user;
 

@@ -16,7 +16,7 @@ public class SetWelcomeMessageCommand extends InChatBotCommand {
     }
 
     @Override
-    public void execute(AbsSender sender, TGroup tGroup, Message message) throws TelegramApiException {
+    public void execute(AbsSender sender, TGroup tGroup, Message message, String[] strings) throws TelegramApiException {
         Pattern pattern = Pattern.compile("^(?<param>b )?(?<text>[\\s\\S\\w]+)");
         Matcher matcher = pattern.matcher(message.getText());
         if (matcher.groupCount() == 0) return;
@@ -25,6 +25,6 @@ public class SetWelcomeMessageCommand extends InChatBotCommand {
         String welMessage = matcher.group("text");
         tGroup.setWel_message(welMessage);
         tGroup.setNew_users_blocked(new_users_blocked);
-        this.chatRep.save(tGroup);
+        this.service.save(tGroup);
     }
 }

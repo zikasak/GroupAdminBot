@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CommandRep extends CrudRepository<TDeclaredCommand, TDeclaredCommandID> {
 
-    TDeclaredCommand getByChatIDAndCommand(long chat_id, String command);
+    TDeclaredCommand getByIdChatIdAndIdCommand(long chat_id, String command);
 
 }
+

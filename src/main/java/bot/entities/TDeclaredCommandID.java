@@ -9,23 +9,23 @@ import java.io.Serializable;
 @Embeddable
 public class TDeclaredCommandID implements Serializable {
     @Column(name = "chat_id")
-    private long chat_id;
+    private long chatId;
     @Column(name = "command")
     private String command;
 
     public TDeclaredCommandID(){}
 
     public TDeclaredCommandID(Chat chat, String command) {
-        this.chat_id = chat.getId();
+        this.chatId = chat.getId();
         this.command = command;
     }
 
-    public long  getChat_id() {
-        return chat_id;
+    public long getChatId() {
+        return chatId;
     }
 
-    public void setChat_id(long chat_id) {
-        this.chat_id = chat_id;
+    public void setChatId(long chatId) {
+        this.chatId = chatId;
     }
 
     public String getCommand() {

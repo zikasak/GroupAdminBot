@@ -5,6 +5,7 @@ import bot.entities.TMutedUser;
 import bot.entities.TMutedUserID;
 import bot.entities.TTimeExceededMessage;
 import bot.reps.MutedUsersRep;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +36,7 @@ public class UnlockChatMemberHandler implements IChannelHandler {
         }
         CallbackQuery callbackQuery = update.getCallbackQuery();
         Long chatId = callbackQuery.getMessage().getChatId();
-        Integer userId = callbackQuery.getFrom().getId();
+        Long userId = callbackQuery.getFrom().getId();
         TMutedUserID id = new TMutedUserID();
         id.setChat_id(chatId);
         id.setUser_id(userId);
