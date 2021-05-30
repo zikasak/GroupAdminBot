@@ -3,8 +3,13 @@ pipeline {
         docker { image 'maven:3.8.1-adoptopenjdk-11' }
     }
     stages {
-        withMaven {
-            sh 'mvn -B clean package'
+        stage("Build") {
+            steps {
+                withMaven {
+                    sh 'mvn -B clean package'
+                }
+            }
         }
+
     }
 }
