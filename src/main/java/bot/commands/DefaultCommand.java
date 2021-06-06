@@ -5,7 +5,6 @@ import bot.entities.TDeclaredCommand;
 import bot.reps.CommandRep;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -15,8 +14,15 @@ import java.util.function.BiConsumer;
 @Component
 public class DefaultCommand implements BiConsumer<AbsSender, Message> {
 
+
+    private final CommandRep commandRep;
+    private final BotUtils botUtils;
+
     @Autowired
-    private CommandRep commandRep;
+    public DefaultCommand(CommandRep commandRep, BotUtils botUtils) {
+        this.commandRep = commandRep;
+        this.botUtils = botUtils;
+    }
 
     @Override
     public void accept(AbsSender absSender, Message message) {
@@ -31,8 +37,8 @@ public class DefaultCommand implements BiConsumer<AbsSender, Message> {
                 msgId = replyToMessage.getMessageId();
             }
             String replyText = command.getCommand_text();
-            BotUtils.sendMessage(absSender, message.getChat(), replyText, msgId);
-            BotUtils.deleteMessage(absSender, message);
+            botUtils.sendMessage(absSender, message.getChat(), replyText, msgId);
+            botUtils.deleteMessage(absSender, message);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }

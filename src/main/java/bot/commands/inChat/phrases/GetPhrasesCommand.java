@@ -21,10 +21,10 @@ public class GetPhrasesCommand extends PhraseCommand {
     public void execute(AbsSender sender, TGroup tGroup, Message message, String[] strings) throws TelegramApiException {
         Set<TBlockedPhrase> blockedPhrases = tGroup.getBlockedPhrases();
         if (blockedPhrases.isEmpty()) {
-            BotUtils.sendMessage(sender, message.getChat(), "Нет запрещенных фраз");
+            botUtils.sendMessage(sender, message.getChat(), "Нет запрещенных фраз");
             return;
         }
         String phrases = blockedPhrases.stream().map((phrase) -> phrase.getId().getBlocked_phrase()).collect(Collectors.joining("\n"));
-        BotUtils.sendMessage(sender, message.getChat(), phrases);
+        botUtils.sendMessage(sender, message.getChat(), phrases);
     }
 }

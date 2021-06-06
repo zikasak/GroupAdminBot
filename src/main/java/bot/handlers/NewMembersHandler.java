@@ -22,14 +22,20 @@ import java.util.Set;
 @Component
 public class NewMembersHandler implements IChannelHandler {
 
+    private final ChatRep chatRep;
+    private final StringUtils stringUtils;
+    private final BotUtils botUtils;
+
     @Autowired
-    private ChatRep chatRep;
-    @Autowired
-    private StringUtils stringUtils;
+    public NewMembersHandler(ChatRep chatRep, StringUtils stringUtils, BotUtils botUtils) {
+        this.chatRep = chatRep;
+        this.stringUtils = stringUtils;
+        this.botUtils = botUtils;
+    }
 
     @Override
     public boolean checkHandle(AbsSender sender, Update update) throws TelegramApiException {
-        boolean userAdmin = BotUtils.isUserAdmin(sender, update.getMessage().getChat(), sender.getMe());
+        boolean userAdmin = botUtils.isUserAdmin(sender, update.getMessage().getChat(), sender.getMe());
         ChatMemberUpdated chatMember = update.getChatMember();
         return userAdmin && chatMember != null;
     }
@@ -49,7 +55,7 @@ public class NewMembersHandler implements IChannelHandler {
         TGroup chat = chatOpt.get();
         String welMessage = chat.getWel_message();
         if(welMessage == null || "".equals(welMessage.trim())) {
-            BotUtils.deleteMessage(sender, update.getMessage());
+            botUtils.deleteMessage(sender, update.getMessage());
             return;
         }
         proceedNewMember(sender, chatMember, chat);
@@ -62,19 +68,19 @@ public class NewMembersHandler implements IChannelHandler {
         User newMember = chatMember.getFrom();
         ReplyKeyboardMarkup readBlockMarkup = null;
         Chat tChat = chatMember.getChat();
-        boolean canRestrict = BotUtils.canRestrictUsers(sender, tChat, sender.getMe());
+        boolean canRestrict = botUtils.canRestrictUsers(sender, tChat, sender.getMe());
         if (new_users_blocked && canRestrict) {
-            readBlockMarkup = BotUtils.getReadBlockMarkup();
+            readBlockMarkup = botUtils.getReadBlockMarkup();
         }
 
         String messageText = stringUtils.fillParams(chat.getWel_message(), tChat, newMember);
-        Message message = BotUtils.sendMessage(sender, tChat, messageText, null, readBlockMarkup);
+        Message message = botUtils.sendMessage(sender, tChat, messageText, null, readBlockMarkup);
         if (!new_users_blocked || !canRestrict) {
             deleteAfterSeen(sender, message);
             return;
         }
         ZonedDateTime restrictTo = ZonedDateTime.now(ZoneOffset.UTC).plusMinutes(time_to_mute);
-        BotUtils.restrictUserUntil(sender, tChat, newMember, restrictTo);
+        botUtils.restrictUserUntil(sender, tChat, newMember, restrictTo);
         Set<TMutedUser> mutedUsers = chat.getMutedUsers();
         TMutedUser tMutedUser = new TMutedUser();
         TMutedUserID tMutedUserID = new TMutedUserID();
@@ -90,7 +96,7 @@ public class NewMembersHandler implements IChannelHandler {
         Runnable runnable = () -> {
             try {
                 Thread.sleep(30000); //30 seconds
-                BotUtils.deleteMessage(sender, message);
+                botUtils.deleteMessage(sender, message);
             } catch (TelegramApiException | InterruptedException e) {
                 e.printStackTrace();
             }

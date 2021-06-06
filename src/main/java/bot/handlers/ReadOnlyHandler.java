@@ -15,19 +15,25 @@ import java.util.Optional;
 @Component
 public class ReadOnlyHandler implements IChannelHandler {
 
+    private final ChatRep chatRep;
+    private final BotUtils botUtils;
+
     @Autowired
-    private ChatRep chatRep;
+    public ReadOnlyHandler(ChatRep chatRep, BotUtils botUtils) {
+        this.chatRep = chatRep;
+        this.botUtils = botUtils;
+    }
 
     @Override
     @Transactional
     public boolean checkHandle(AbsSender sender, Update update) throws TelegramApiException {
         Optional<TGroup> byId = this.chatRep.findById(update.getMessage().getChatId());
         if (byId.isEmpty()) return false;
-        return byId.get().isRead_only() && !BotUtils.isUserAdmin(sender, update.getMessage().getChat(), update.getMessage().getFrom());
+        return byId.get().isRead_only() && !botUtils.isUserAdmin(sender, update.getMessage().getChat(), update.getMessage().getFrom());
     }
 
     @Override
     public void handle(AbsSender sender, Update update) throws TelegramApiException {
-        BotUtils.deleteMessage(sender, update.getMessage(), sender.getMe());
+        botUtils.deleteMessage(sender, update.getMessage(), sender.getMe());
     }
 }

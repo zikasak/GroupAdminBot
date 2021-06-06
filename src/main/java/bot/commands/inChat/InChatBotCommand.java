@@ -1,5 +1,6 @@
 package bot.commands.inChat;
 
+import bot.BotUtils;
 import bot.entities.TGroup;
 import bot.reps.ChatRep;
 import bot.services.InChatBotCommandService;
@@ -14,6 +15,8 @@ public abstract class InChatBotCommand implements IBotCommand {
 
     @Autowired
     protected InChatBotCommandService service;
+    @Autowired
+    protected BotUtils botUtils;
 
     protected boolean rightsNeeded;
     protected boolean deleteAfterUse;

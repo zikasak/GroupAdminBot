@@ -19,12 +19,19 @@ import java.util.Optional;
 
 @Service
 public class InChatBotCommandService {
+
+    private final ChatRep chatRep;
+    private final CommandRep commandRep;
+    private final PhrasesRep phrasesRep;
+    private final BotUtils botUtils;
+
     @Autowired
-    protected ChatRep chatRep;
-    @Autowired
-    protected CommandRep commandRep;
-    @Autowired
-    protected PhrasesRep phrasesRep;
+    public InChatBotCommandService(ChatRep chatRep, CommandRep commandRep, PhrasesRep phrasesRep, BotUtils botUtils) {
+        this.chatRep = chatRep;
+        this.commandRep = commandRep;
+        this.phrasesRep = phrasesRep;
+        this.botUtils = botUtils;
+    }
 
     @Transactional
     public void processMessage(AbsSender absSender, Message message, String[] strings, InChatBotCommand command) throws TelegramApiException {
@@ -33,11 +40,11 @@ public class InChatBotCommandService {
         message.setText(replace);
         Optional<TGroup> chat = this.chatRep.findById(message.getChatId());
         boolean rightsNeeded = command.isRightsNeeded();
-        boolean alligableToRun = !rightsNeeded || BotUtils.isUserAdmin(absSender, message.getChat(), message.getFrom());
+        boolean alligableToRun = !rightsNeeded || botUtils.isUserAdmin(absSender, message.getChat(), message.getFrom());
         if (alligableToRun && chat.isPresent() == command.isChatCheckParam())
             command.execute(absSender, chat.orElse(null), message, strings);
         if (command.isDeleteAfterUse()){
-            BotUtils.deleteMessage(absSender, message, absSender.getMe());
+            botUtils.deleteMessage(absSender, message, absSender.getMe());
         }
     }
 

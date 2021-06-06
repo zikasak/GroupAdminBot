@@ -5,7 +5,6 @@ import bot.entities.TMutedUser;
 import bot.entities.TMutedUserID;
 import bot.entities.TTimeExceededMessage;
 import bot.reps.MutedUsersRep;
-import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,8 +19,15 @@ import java.util.Optional;
 
 @Component
 public class UnlockChatMemberHandler implements IChannelHandler {
+
+    private final MutedUsersRep mutedUsersRep;
+    private final BotUtils botUtils;
+
     @Autowired
-    private MutedUsersRep mutedUsersRep;
+    public UnlockChatMemberHandler(MutedUsersRep mutedUsersRep, BotUtils botUtils) {
+        this.mutedUsersRep = mutedUsersRep;
+        this.botUtils = botUtils;
+    }
 
     @Override
     public boolean checkHandle(AbsSender sender, Update update) {
@@ -45,18 +51,18 @@ public class UnlockChatMemberHandler implements IChannelHandler {
         TMutedUser tMutedUser = byId.get();
         ZonedDateTime mute_date = tMutedUser.getMute_date();
         if (ZonedDateTime.now().compareTo(mute_date) < 0) {
-            Message message = BotUtils.sendMessage(sender, update.getMessage().getChat(), "А лукавить нехорошо. Пожалуйста, прочитайте");
+            Message message = botUtils.sendMessage(sender, update.getMessage().getChat(), "А лукавить нехорошо. Пожалуйста, прочитайте");
             tMutedUser.getTime_messages().add(new TTimeExceededMessage(tMutedUser, message));
             return;
         }
         for (TTimeExceededMessage time_message : tMutedUser.getTime_messages()) {
-            BotUtils.deleteMessage(sender, time_message);
+            botUtils.deleteMessage(sender, time_message);
         }
         this.mutedUsersRep.delete(tMutedUser);
         Message msg = new Message();
         msg.setChat(update.getMessage().getChat());
         msg.setMessageId(tMutedUser.getWelcome_msg_id());
-        BotUtils.deleteMessage(sender, msg);
+        botUtils.deleteMessage(sender, msg);
         
     }
 }

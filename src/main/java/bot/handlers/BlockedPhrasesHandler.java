@@ -6,7 +6,6 @@ import bot.entities.TGroup;
 import bot.reps.ChatRep;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -18,12 +17,18 @@ import java.util.Set;
 @Component
 public class BlockedPhrasesHandler implements IChannelHandler {
 
+    private final ChatRep chatRep;
+    private final BotUtils botUtils;
+
     @Autowired
-    private ChatRep chatRep;
+    public BlockedPhrasesHandler(ChatRep chatRep, BotUtils botUtils) {
+        this.chatRep = chatRep;
+        this.botUtils = botUtils;
+    }
 
     @Override
     public boolean checkHandle(AbsSender sender, Update update) throws TelegramApiException {
-        return !BotUtils.isUserAdmin(sender, update.getMessage().getChat(), update.getMessage().getFrom());
+        return !botUtils.isUserAdmin(sender, update.getMessage().getChat(), update.getMessage().getFrom());
     }
 
     @Override
@@ -36,7 +41,7 @@ public class BlockedPhrasesHandler implements IChannelHandler {
         for (TBlockedPhrase blockedPhrase : blockedPhrases) {
             String search_phrase = " " + blockedPhrase.getId().getBlocked_phrase() + " ";
             if (text.contains(search_phrase)){
-                BotUtils.deleteMessage(sender, update.getMessage());
+                botUtils.deleteMessage(sender, update.getMessage());
                 return;
             }
         }

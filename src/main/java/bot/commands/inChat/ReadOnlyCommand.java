@@ -19,10 +19,10 @@ public abstract class ReadOnlyCommand extends InChatBotCommand {
     @Override
     public void execute(AbsSender sender, TGroup tGroup, Message message, String[] strings) throws TelegramApiException {
         tGroup.setRead_only(this.startRO);
-        BotUtils.sendMessage(sender, message.getChat(), this.getReadOnlyMessageText());
+        botUtils.sendMessage(sender, message.getChat(), this.getReadOnlyMessageText());
         if (strings.length > 0){
             String text = String.join(" ", strings);
-            BotUtils.sendMessage(sender, message.getChat(), text);
+            botUtils.sendMessage(sender, message.getChat(), text);
         }
         this.service.save(tGroup);
     }

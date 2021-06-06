@@ -28,6 +28,6 @@ public class GetCommandsCommand extends InChatBotCommand {
         commandString += commands.orElse("");
         Chat userChat = new Chat();
         userChat.setId(message.getFrom().getId());
-        BotUtils.sendMessage(sender, userChat, commandString);
+        botUtils.sendMessage(sender, userChat, commandString);
     }
 }
