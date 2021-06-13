@@ -5,6 +5,7 @@ import bot.entities.TBlockedPhrase;
 import bot.entities.TBlockedPhraseID;
 import bot.entities.TGroup;
 import bot.reps.ChatRep;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -39,19 +40,25 @@ public class BlockedPhrasesHandlerTest {
         this.absSender = Mockito.mock(AbsSender.class);
     }
 
+    @BeforeEach
+    void setUp(){
+        String phrase = getBlockedPhrase();
+        when(chatRep.findById(1L)).thenReturn(getGroupWithBlockedPhrase(phrase));
+    }
+
+    private String getBlockedPhrase() {
+        return "blocked phrase";
+    }
+
     @Test
     void messageWithBlockedPhraseShouldBeDeleted() throws TelegramApiException {
-        String phrase = "blocked phrase";
-        when(chatRep.findById(1L)).thenReturn(getGroupWithBlockedPhrase(phrase));
-        Update update = getUpdateWithBlockedPhrase(phrase);
+        Update update = getUpdateWithBlockedPhrase();
         handler.handle(absSender, update);
         verify(botUtils, times(1)).deleteMessage(absSender, update.getMessage());
     }
 
     @Test
     void messageWithoutBlockedPhraseShouldBeStay() throws TelegramApiException {
-        String phrase = "blocked phrase";
-        when(chatRep.findById(1L)).thenReturn(getGroupWithBlockedPhrase(phrase));
         Update update = getUpdateWithOutBlockedPhrase();
         handler.handle(absSender, update);
         verify(botUtils, times(0)).deleteMessage(absSender, update.getMessage());
@@ -67,12 +74,12 @@ public class BlockedPhrasesHandlerTest {
         return update;
     }
 
-    private Update getUpdateWithBlockedPhrase(String phrase) {
+    private Update getUpdateWithBlockedPhrase() {
         Update update = new Update();
         Message message = new Message();
         Chat supergroup = new Chat(1L, "supergroup");
         message.setChat(supergroup);
-        message.setText(phrase);
+        message.setText(getBlockedPhrase());
         update.setMessage(message);
         return update;
     }
