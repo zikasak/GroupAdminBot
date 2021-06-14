@@ -7,7 +7,7 @@ pipeline {
     stages {
         stage('Test') {
             steps {
-                withEnv(['${botNameEnv}', '{$botTokenEnv}']){
+                withEnv([params.botNameEnv, params.botTokenEnv.toString()]){
                    withMaven {
                       sh 'mvn test'
                    }
