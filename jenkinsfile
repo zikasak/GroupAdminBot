@@ -3,6 +3,13 @@ pipeline {
         docker { image 'maven:3.8.1-adoptopenjdk-15' }
     }
     stages {
+        stage('Test') {
+            steps {
+               withMaven {
+                  sh 'mvn test'
+               }
+            }
+        }
         stage("Build") {
             steps {
                 withMaven {
@@ -14,7 +21,7 @@ pipeline {
     }
     post{	//No matter success or failure will send information, youid is the group id sent
             always{
-                telegramSend(message:'${PROJECT_NAME}:${BUILD_STATUS}',chatId:'${NotificationChat}'.toLong())
+                telegramSend(message:'${PROJECT_NAME}:${BUILD_STATUS}',chatId:params.NotificationChat.toLong())
              }
 
        }
