@@ -16,6 +16,6 @@ pipeline {
             always{
                 telegramSend(message:'${PROJECT_NAME}:${BUILD_STATUS}',chatId:${NotificationChat})
              }
-          }
+
        }
 }
