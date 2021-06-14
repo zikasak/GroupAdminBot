@@ -6,14 +6,12 @@ pipeline {
     }
     stages {
         stage('Test') {
-              environment {
-                 botName = '${botName}'
-                 botToken = '${botToken}'
-               }
-            steps {
-               withMaven {
-                  sh 'mvn test'
-               }
+            withEnv(['${botNameEnv}', '{$botTokenEnv}']){
+                steps {
+                   withMaven {
+                      sh 'mvn test'
+                   }
+                }
             }
         }
         stage("Build") {
