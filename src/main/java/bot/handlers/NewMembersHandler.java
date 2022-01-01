@@ -37,8 +37,10 @@ public class NewMembersHandler extends ChannelHandler {
     }
 
     @Override
-    protected boolean checkHandle(AbsSender sender, Update update) throws TelegramApiException {
-        ChatMember chatMember = update.getChatMember().getNewChatMember();
+    protected boolean checkHandle(AbsSender sender, Update update) {
+        ChatMemberUpdated updateChatMember = update.getChatMember();
+        if (updateChatMember == null) return false;
+        ChatMember chatMember = updateChatMember.getNewChatMember();
 
         return chatMember instanceof ChatMemberMember;
     }
