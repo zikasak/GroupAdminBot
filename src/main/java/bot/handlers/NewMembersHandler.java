@@ -63,7 +63,6 @@ public class NewMembersHandler extends ChannelHandler {
             return;
         }
         proceedNewMember(sender, chatMember.getUser(), telegramChat, chat);
-        chatService.save(chat);
     }
 
     private void proceedNewMember(AbsSender sender, User newMember, Chat tChat, TGroup chat) throws TelegramApiException {
