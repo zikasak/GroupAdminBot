@@ -40,9 +40,7 @@ public class NewMembersHandler extends ChannelHandler {
     protected boolean checkHandle(AbsSender sender, Update update) {
         ChatMemberUpdated updateChatMember = update.getChatMember();
         if (updateChatMember == null) return false;
-        ChatMember chatMember = updateChatMember.getNewChatMember();
-
-        return chatMember instanceof ChatMemberMember;
+        return updateChatMember.getNewChatMember().getStatus().equals("member");
     }
 
     @Override
@@ -51,7 +49,7 @@ public class NewMembersHandler extends ChannelHandler {
         log.debug("Handling new member");
         ChatMemberUpdated updatedChatMember = update.getChatMember();
         ChatMemberMember chatMember = (ChatMemberMember) updatedChatMember.getNewChatMember();
-        Chat telegramChat = updatedChatMember.getChat();
+        Chat telegramChat = botUtils.getChat(sender, updatedChatMember.getChat().getId());
         Optional<TGroup> chatOpt = chatService.get(telegramChat.getId());
         if (chatOpt.isEmpty()) {
             log.debug("Chat doesn't found in database");
@@ -64,7 +62,6 @@ public class NewMembersHandler extends ChannelHandler {
             botUtils.deleteMessage(sender, update.getMessage());
             return;
         }
-        telegramChat = botUtils.getChat(sender, telegramChat.getId());
         proceedNewMember(sender, chatMember.getUser(), telegramChat, chat);
         chatService.save(chat);
     }
@@ -74,13 +71,13 @@ public class NewMembersHandler extends ChannelHandler {
         final int time_to_mute = chat.getTime_to_mute();
         ReplyKeyboardMarkup readBlockMarkup = null;
         boolean canRestrict = botUtils.canRestrictUsers(sender, tChat, sender.getMe());
-        if (new_users_blocked && canRestrict) {
+        boolean needRestrict = new_users_blocked && canRestrict;
+        if (needRestrict) {
             readBlockMarkup = botUtils.getReadBlockMarkup();
         }
-
         String messageText = stringUtils.fillParams(chat.getWel_message(), tChat, newMember);
         Message message = botUtils.sendMessage(sender, tChat, messageText, null, readBlockMarkup);
-        if (!new_users_blocked || !canRestrict) {
+        if (!needRestrict) {
             log.debug("No need to restrict user");
             deleteAfterSeen(sender, message);
             return;

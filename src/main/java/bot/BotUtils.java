@@ -124,8 +124,7 @@ public class BotUtils {
 
     private ChatMember getChatMember(AbsSender sender, Chat chat, User user) throws TelegramApiException {
         GetChatMember getChatMember = new GetChatMember(Long.toString(chat.getId()), user.getId());
-        ChatMember chatMember = sender.execute(getChatMember);
-        return chatMember;
+        return sender.execute(getChatMember);
     }
 
     public ReplyKeyboardMarkup getReadBlockMarkup(){

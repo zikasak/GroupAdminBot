@@ -18,7 +18,6 @@ public class PinnedMessageParameterReplacer implements IParameterReplacer {
         if (pinnedMessage == null)
             return text.replace(getHandleParameter(), "");
         Integer pinnedId = pinnedMessage.getMessageId();
-        String userName = chat.getUserName();
         long chatId = Long.parseLong(chat.getId().toString().substring(4));
         String replacement = "https://t.me/c/%d/%d".formatted(chatId, pinnedId);
         return text.replace(getHandleParameter(), replacement);

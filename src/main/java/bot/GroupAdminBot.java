@@ -20,14 +20,13 @@ public class GroupAdminBot extends TelegramLongPollingCommandBot {
     private String botUsername;
     @Value("${botToken}")
     private String botToken;
-    private ChannelHandler[] handlers;
+    private final ChannelHandler[] handlers;
 
     @Autowired
     public GroupAdminBot(DefaultCommand def, IBotCommand[] commands, ChannelHandler[] handlers, AllUpdatesBotOptions botOptions) {
         super(botOptions);
         this.handlers = handlers;
         initialize(def, commands);
-
     }
 
     @Override
@@ -37,7 +36,6 @@ public class GroupAdminBot extends TelegramLongPollingCommandBot {
 
     @Override
     public void processNonCommandUpdate(Update update) {
-//        log.debug("proceed update from chat " + update.getMessage().getChat() + " from user " + update.getMessage().getFrom() );
         for (ChannelHandler handler : handlers) {
             try {
                 handler.handle(this, update);
