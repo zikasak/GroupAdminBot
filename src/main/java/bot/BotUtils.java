@@ -2,12 +2,13 @@ package bot;
 
 import bot.entities.TTimeExceededMessage;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.groupadministration.GetChatMember;
-import org.telegram.telegrambots.meta.api.methods.groupadministration.KickChatMember;
-import org.telegram.telegrambots.meta.api.methods.groupadministration.RestrictChatMember;
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
+import org.telegram.telegrambots.meta.api.methods.groupadministration.*;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.*;
+import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMember;
+import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMemberAdministrator;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.bots.AbsSender;
@@ -19,9 +20,24 @@ import java.util.Collections;
 @Component
 public class BotUtils {
 
+    public Chat getChat(AbsSender absSender, long chatId) throws TelegramApiException {
+        GetChat build = GetChat.builder()
+                .chatId(String.valueOf(chatId))
+                .build();
+        return absSender.execute(build);
+    }
+
+    public boolean isUserAdmin(AbsSender sender, Message message) throws TelegramApiException {
+        Chat senderChat = message.getSenderChat();
+        if (senderChat != null) return true;
+        Chat chat = message.getChat();
+        User user = message.getFrom();
+        return isUserAdmin(sender, chat, user);
+    }
+
     public boolean isUserAdmin(AbsSender sender, Chat chat, User user) throws TelegramApiException {
         ChatMember chatMember = getChatMember(sender, chat, user);
-        return chatMember.getUser().getId() == 1087968824 || chatMember.getIsAnonymous() != null|| chatMember.getStatus().equals("administrator") || chatMember.getStatus().equals("creator");
+        return chatMember.getStatus().equals("administrator") || chatMember.getStatus().equals("creator");
     }
 
     public Message sendMessage(AbsSender sender, Chat chat, String text) throws TelegramApiException {
@@ -36,8 +52,10 @@ public class BotUtils {
         Long chatId = chat.getId();
         SendMessage msg = new SendMessage();
         msg.setText(text);
+        msg.setParseMode(ParseMode.HTML);
         msg.setChatId(Long.toString(chatId));
         msg.setReplyMarkup(markup);
+        msg.setDisableWebPagePreview(true);
         if (replyId != null) {
             msg.setReplyToMessageId(replyId);
         }
@@ -66,10 +84,10 @@ public class BotUtils {
     }
 
     public void banUser(AbsSender sender, Chat chat, User user) throws TelegramApiException {
-        KickChatMember kickChatMember = new KickChatMember();
-        kickChatMember.setChatId(String.valueOf(chat.getId()));
-        kickChatMember.setUserId(user.getId());
-        sender.execute(kickChatMember);
+        BanChatMember banChatMember = new BanChatMember();
+        banChatMember.setChatId(String.valueOf(chat.getId()));
+        banChatMember.setUserId(user.getId());
+        sender.execute(banChatMember);
     }
 
     public void restrictUserUntil(AbsSender sender, Chat chat, User user, ZonedDateTime restrictTo) throws TelegramApiException {
@@ -90,12 +108,18 @@ public class BotUtils {
 
     public boolean canRestrictUsers(AbsSender sender, Chat chat, User user) throws TelegramApiException {
         ChatMember chatMember = getChatMember(sender, chat, user);
-        return chatMember.getCanRestrictMembers();
+        if (!(chatMember instanceof ChatMemberAdministrator))
+            return false;
+        ChatMemberAdministrator administrator = (ChatMemberAdministrator) chatMember;
+        return administrator.getCanRestrictMembers();
     }
 
     public boolean canDeleteMessages(AbsSender sender, Chat chat, User user) throws TelegramApiException {
         ChatMember chatMember = getChatMember(sender, chat, user);
-        return chatMember.getCanDeleteMessages() != null && chatMember.getCanDeleteMessages();
+        if (!(chatMember instanceof ChatMemberAdministrator))
+            return false;
+        ChatMemberAdministrator administrator = (ChatMemberAdministrator) chatMember;
+        return administrator.getCanDeleteMessages() != null && administrator.getCanDeleteMessages();
     }
 
     private ChatMember getChatMember(AbsSender sender, Chat chat, User user) throws TelegramApiException {

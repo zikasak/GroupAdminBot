@@ -2,9 +2,8 @@ package bot.handlers;
 
 import bot.BotUtils;
 import bot.entities.TMutedUser;
-import bot.entities.TMutedUserID;
 import bot.entities.TTimeExceededMessage;
-import bot.reps.MutedUsersRep;
+import bot.mappers.MutedUserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,35 +17,29 @@ import java.time.ZonedDateTime;
 import java.util.Optional;
 
 @Component
-public class UnlockChatMemberHandler implements IChannelHandler {
+public class UnlockChatMemberHandler extends ChannelHandler {
 
-    private final MutedUsersRep mutedUsersRep;
+    private final MutedUserMapper mutedUserMapper;
     private final BotUtils botUtils;
 
     @Autowired
-    public UnlockChatMemberHandler(MutedUsersRep mutedUsersRep, BotUtils botUtils) {
-        this.mutedUsersRep = mutedUsersRep;
+    public UnlockChatMemberHandler(MutedUserMapper mutedUserMapper, BotUtils botUtils) {
+        this.mutedUserMapper = mutedUserMapper;
         this.botUtils = botUtils;
     }
 
     @Override
-    public boolean checkHandle(AbsSender sender, Update update) {
+    protected boolean checkHandle(AbsSender sender, Update update) {
         return update.hasCallbackQuery();
     }
 
     @Override
     @Transactional
-    public void handle(AbsSender sender, Update update) throws TelegramApiException {
-        if (!checkHandle(sender, update)){
-            return;
-        }
+    protected void handleMessage(AbsSender sender, Update update) throws TelegramApiException {
         CallbackQuery callbackQuery = update.getCallbackQuery();
         Long chatId = callbackQuery.getMessage().getChatId();
         Long userId = callbackQuery.getFrom().getId();
-        TMutedUserID id = new TMutedUserID();
-        id.setChat_id(chatId);
-        id.setUser_id(userId);
-        Optional<TMutedUser> byId = this.mutedUsersRep.findById(id);
+        Optional<TMutedUser> byId = this.mutedUserMapper.findByUsedIdAndChatId(userId, chatId);
         if (byId.isEmpty()) return;
         TMutedUser tMutedUser = byId.get();
         ZonedDateTime mute_date = tMutedUser.getMute_date();
@@ -58,7 +51,7 @@ public class UnlockChatMemberHandler implements IChannelHandler {
         for (TTimeExceededMessage time_message : tMutedUser.getTime_messages()) {
             botUtils.deleteMessage(sender, time_message);
         }
-        this.mutedUsersRep.delete(tMutedUser);
+        this.mutedUserMapper.delete(tMutedUser.getUser_id(), tMutedUser.getChat_id());
         Message msg = new Message();
         msg.setChat(update.getMessage().getChat());
         msg.setMessageId(tMutedUser.getWelcome_msg_id());

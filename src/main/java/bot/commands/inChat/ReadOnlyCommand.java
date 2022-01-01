@@ -1,6 +1,5 @@
 package bot.commands.inChat;
 
-import bot.BotUtils;
 import bot.entities.TGroup;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;

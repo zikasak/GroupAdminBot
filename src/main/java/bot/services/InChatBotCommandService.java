@@ -5,9 +5,10 @@ import bot.commands.inChat.InChatBotCommand;
 import bot.entities.TBlockedPhrase;
 import bot.entities.TDeclaredCommand;
 import bot.entities.TGroup;
-import bot.reps.ChatRep;
-import bot.reps.CommandRep;
-import bot.reps.PhrasesRep;
+import bot.mappers.ChatMapper;
+import bot.mappers.CommandMapper;
+import bot.mappers.BlockedPhraseMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,18 +19,19 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class InChatBotCommandService {
 
-    private final ChatRep chatRep;
-    private final CommandRep commandRep;
-    private final PhrasesRep phrasesRep;
+    private final ChatMapper chatRep;
+    private final CommandMapper commandMapper;
+    private final BlockedPhraseMapper blockedPhraseMapper;
     private final BotUtils botUtils;
 
     @Autowired
-    public InChatBotCommandService(ChatRep chatRep, CommandRep commandRep, PhrasesRep phrasesRep, BotUtils botUtils) {
+    public InChatBotCommandService(ChatMapper chatRep, CommandMapper commandMapper, BlockedPhraseMapper blockedPhraseMapper, BotUtils botUtils) {
         this.chatRep = chatRep;
-        this.commandRep = commandRep;
-        this.phrasesRep = phrasesRep;
+        this.commandMapper = commandMapper;
+        this.blockedPhraseMapper = blockedPhraseMapper;
         this.botUtils = botUtils;
     }
 
@@ -40,7 +42,7 @@ public class InChatBotCommandService {
         message.setText(replace);
         Optional<TGroup> chat = this.chatRep.findById(message.getChatId());
         boolean rightsNeeded = command.isRightsNeeded();
-        boolean alligableToRun = !rightsNeeded || botUtils.isUserAdmin(absSender, message.getChat(), message.getFrom());
+        boolean alligableToRun = !rightsNeeded || botUtils.isUserAdmin(absSender, message);
         if (alligableToRun && chat.isPresent() == command.isChatCheckParam())
             command.execute(absSender, chat.orElse(null), message, strings);
         if (command.isDeleteAfterUse()){
@@ -55,22 +57,22 @@ public class InChatBotCommandService {
 
     @Transactional
     public void save(TDeclaredCommand command){
-        this.commandRep.save(command);
+        this.commandMapper.save(command);
     }
 
     @Transactional
     public void save(TBlockedPhrase blockedPhrase){
-        this.phrasesRep.save(blockedPhrase);
+        this.blockedPhraseMapper.save(blockedPhrase.getChat_id(), blockedPhrase.getBlocked_phrase());
     }
 
     @Transactional
     public void delete(TDeclaredCommand command){
-        this.commandRep.delete(command);
+        this.commandMapper.delete(command.getChatId(), command.getCommand());
     }
 
     @Transactional
     public void delete(TBlockedPhrase phrase){
-        this.phrasesRep.delete(phrase);
+        this.blockedPhraseMapper.delete(phrase.getChat_id(), phrase.getBlocked_phrase());
     }
 
 }

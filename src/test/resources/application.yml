@@ -1,0 +1,26 @@
+hibernate:
+  jdbc:
+    time_zone:UTC
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: none
+      default_schema: public
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  datasource:
+    url: jdbc:postgresql://syno.local:52222/test
+    username: test
+    password: test
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+    enabled: true
+    drop-first: false
+    default-schema: public
+botName: GroupAdminBetaBot
+botToken: 1798671050:AAFHU-3cDAIyu3vn9eJDT-O6AOSwD-ybMYc

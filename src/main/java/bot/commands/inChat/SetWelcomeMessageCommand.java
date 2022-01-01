@@ -19,7 +19,7 @@ public class SetWelcomeMessageCommand extends InChatBotCommand {
     public void execute(AbsSender sender, TGroup tGroup, Message message, String[] strings) throws TelegramApiException {
         Pattern pattern = Pattern.compile("^(?<param>b )?(?<text>[\\s\\S\\w]+)");
         Matcher matcher = pattern.matcher(message.getText());
-        if (matcher.groupCount() == 0) return;
+        if (!matcher.matches()) return;
         String param = matcher.group("param");
         boolean new_users_blocked = param != null && !param.isBlank();
         String welMessage = matcher.group("text");

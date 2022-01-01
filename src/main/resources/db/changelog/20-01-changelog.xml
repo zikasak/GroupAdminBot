@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.10.xsd">
+    <changeSet id="20092021-01" author="IoffeGL">
+        <createTable tableName="t_blocked_phrase">
+            <column name="chat_id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="blocked_phrase" type="TEXT">
+                <constraints primaryKey="true"/>
+            </column>
+        </createTable>
+        <createTable tableName="t_declared_command">
+            <column name="chat_id" type="bigint">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="command_text" type="text"/>
+            <column name="command" type="text">
+                <constraints primaryKey="true"/>
+            </column>
+        </createTable>
+        <createTable tableName="t_groups">
+            <column name="chat_id" type="bigint">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="chat_name" type="text"/>
+            <column name="new_users_blocked" type="boolean" defaultValue="false"/>
+            <column name="read_only" type="boolean" defaultValue="false"/>
+            <column name="time_to_mute" type="int" defaultValue="5"/>
+            <column name="wel_message" type="text"/>
+        </createTable>
+        <createTable tableName="t_groups_admins">
+            <column name="chat_id" type="bigint">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="user_id" type="bigint">
+                <constraints primaryKey="true"/>
+            </column>
+        </createTable>
+        <createTable tableName="t_muted_users">
+            <column name="chat_id" type="bigint">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="user_id" type="bigint">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="group_chat_id" type="bigint">
+                <constraints referencedTableName="t_groups"
+                             referencedColumnNames="chat_id"
+                             foreignKeyName="t_group_chat_id_fk"/>
+            </column>
+            <column name="mute_date" type="TIMESTAMP"/>
+            <column name="welcome_msg_id" type="bigint"/>
+        </createTable>
+        <createTable tableName="t_time_exceeded_messages">
+            <column name="chat_id" type="bigint">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="user_id" type="bigint">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="message_id" type="bigint">
+                <constraints primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

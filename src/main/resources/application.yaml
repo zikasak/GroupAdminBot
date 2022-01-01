@@ -1,0 +1,20 @@
+hibernate:
+  jdbc:
+    time_zone:UTC
+spring:
+
+  datasource:
+    url: jdbc:postgresql://syno.local:52222/test
+    username: test
+    password: test
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+    enabled: true
+    drop-first: false
+    default-schema: public
+logging:
+  level:
+    org:
+      springframework: INFO
+    bot: DEBUG
+

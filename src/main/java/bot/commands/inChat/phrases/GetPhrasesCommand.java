@@ -1,8 +1,8 @@
 package bot.commands.inChat.phrases;
 
-import bot.BotUtils;
 import bot.entities.TBlockedPhrase;
 import bot.entities.TGroup;
+import bot.services.BlockedPhraseService;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
@@ -13,18 +13,21 @@ import java.util.stream.Collectors;
 
 @Component
 public class GetPhrasesCommand extends PhraseCommand {
-    public GetPhrasesCommand() {
+    private final BlockedPhraseService blockedPhraseService;
+
+    public GetPhrasesCommand(BlockedPhraseService blockedPhraseService) {
         super("get", true, true, true, "s");
+        this.blockedPhraseService = blockedPhraseService;
     }
 
     @Override
     public void execute(AbsSender sender, TGroup tGroup, Message message, String[] strings) throws TelegramApiException {
-        Set<TBlockedPhrase> blockedPhrases = tGroup.getBlockedPhrases();
+        Set<TBlockedPhrase> blockedPhrases = blockedPhraseService.getForGroup(tGroup);
         if (blockedPhrases.isEmpty()) {
             botUtils.sendMessage(sender, message.getChat(), "Нет запрещенных фраз");
             return;
         }
-        String phrases = blockedPhrases.stream().map((phrase) -> phrase.getId().getBlocked_phrase()).collect(Collectors.joining("\n"));
+        String phrases = blockedPhrases.stream().map(TBlockedPhrase::getBlocked_phrase).collect(Collectors.joining("\n"));
         botUtils.sendMessage(sender, message.getChat(), phrases);
     }
 }

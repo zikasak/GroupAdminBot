@@ -2,9 +2,10 @@ package bot.handlers;
 
 import bot.BotUtils;
 import bot.entities.TBlockedPhrase;
-import bot.entities.TBlockedPhraseID;
 import bot.entities.TGroup;
-import bot.reps.ChatRep;
+import bot.mappers.ChatMapper;
+import bot.services.BlockedPhraseService;
+import bot.services.ChatService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,6 +22,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.mockito.Mockito.*;
 
@@ -29,21 +31,31 @@ import static org.mockito.Mockito.*;
 public class BlockedPhrasesHandlerTest {
 
     private final BlockedPhrasesHandler handler;
-    private final ChatRep chatRep;
+    private final ChatService chatRep;
     private final BotUtils botUtils;
+    private BlockedPhraseService blockedPhraseService;
     private final AbsSender absSender;
 
-    public BlockedPhrasesHandlerTest(@Mock ChatRep chatRep, @Mock BotUtils botUtils) {
+    public BlockedPhrasesHandlerTest(@Mock ChatService chatRep, @Mock BotUtils botUtils, @Mock BlockedPhraseService blockedPhraseService) {
         this.chatRep = chatRep;
         this.botUtils = botUtils;
-        this.handler = new BlockedPhrasesHandler(chatRep, botUtils);
+        this.blockedPhraseService = blockedPhraseService;
+        this.handler = new BlockedPhrasesHandler(chatRep, botUtils, blockedPhraseService);
         this.absSender = Mockito.mock(AbsSender.class);
     }
 
     @BeforeEach
     void setUp(){
-        String phrase = getBlockedPhrase();
-        when(chatRep.findById(1L)).thenReturn(getGroupWithBlockedPhrase(phrase));
+        when(chatRep.get(1L)).thenReturn(Optional.of(getGroupWithBlockedPhrase()));
+        when(blockedPhraseService.getForGroup(getGroupWithBlockedPhrase())).thenReturn(Set.of(getBlockedPhraseObject()));
+    }
+
+    private TBlockedPhrase getBlockedPhraseObject() {
+        TGroup groupWithBlockedPhrase = getGroupWithBlockedPhrase();
+        TBlockedPhrase tBlockedPhrase = new TBlockedPhrase();
+        tBlockedPhrase.setBlocked_phrase(getBlockedPhrase());
+        tBlockedPhrase.setChat_id(groupWithBlockedPhrase.getChat_id());
+        return tBlockedPhrase;
     }
 
     private String getBlockedPhrase() {
@@ -54,14 +66,14 @@ public class BlockedPhrasesHandlerTest {
     void messageWithBlockedPhraseShouldBeDeleted() throws TelegramApiException {
         Update update = getUpdateWithBlockedPhrase();
         handler.handle(absSender, update);
-        verify(botUtils, times(1)).deleteMessage(absSender, update.getMessage());
+        verify(botUtils, times(1)).deleteMessage(absSender, update.getMessage(), absSender.getMe());
     }
 
     @Test
     void messageWithoutBlockedPhraseShouldBeStay() throws TelegramApiException {
         Update update = getUpdateWithOutBlockedPhrase();
         handler.handle(absSender, update);
-        verify(botUtils, times(0)).deleteMessage(absSender, update.getMessage());
+        verify(botUtils, times(0)).deleteMessage(absSender, update.getMessage(), absSender.getMe());
     }
 
     private Update getUpdateWithOutBlockedPhrase() {
@@ -83,19 +95,11 @@ public class BlockedPhrasesHandlerTest {
         update.setMessage(message);
         return update;
     }
-
-    private Optional<TGroup> getGroupWithBlockedPhrase(String phrase){
+//
+    private TGroup getGroupWithBlockedPhrase(){
         TGroup tGroup = new TGroup();
         tGroup.setChat_name("chat_name");
         tGroup.setChat_id(1L);
-        HashSet<TBlockedPhrase> hashSet = new HashSet<>();
-        TBlockedPhrase tBlockedPhrase = new TBlockedPhrase();
-        TBlockedPhraseID id = new TBlockedPhraseID();
-        id.setChat_id(1L);
-        id.setBlocked_phrase(phrase);
-        tBlockedPhrase.setId(id);
-        hashSet.add(tBlockedPhrase);
-        tGroup.setBlockedPhrases(hashSet);
-        return Optional.of(tGroup);
+        return tGroup;
     }
 }

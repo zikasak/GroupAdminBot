@@ -2,7 +2,6 @@ package bot.commands.inChat;
 
 import bot.BotUtils;
 import bot.entities.TGroup;
-import bot.reps.ChatRep;
 import bot.services.InChatBotCommandService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.IBotCommand;

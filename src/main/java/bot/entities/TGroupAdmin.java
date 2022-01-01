@@ -1,46 +1,18 @@
 package bot.entities;
 
-import javax.persistence.*;
+import lombok.Data;
+
 import java.io.Serializable;
-import java.util.Objects;
 import java.util.Set;
 
-@Entity
-@Table(name = "TGroupAdmin")
+@Data
 public class TGroupAdmin implements Serializable {
 
-    @EmbeddedId
-    private TGroupAdminID id;
+    private Long user_id;
+    private Long chat_id;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "chat_id", updatable = false, insertable = false)
     private Set<TGroup> groups;
 
-    public TGroupAdminID getId() {
-        return id;
-    }
 
-    public void setId(TGroupAdminID id) {
-        this.id = id;
-    }
-
-    public Set<TGroup> getGroups() {
-        return groups;
-    }
-
-    public void setGroups(Set<TGroup> groups) {
-        this.groups = groups;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        TGroupAdmin that = (TGroupAdmin) o;
-        return id.equals(that.id) && groups.equals(that.groups);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, groups);
-    }
 }

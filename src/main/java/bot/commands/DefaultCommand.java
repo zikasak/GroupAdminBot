@@ -2,7 +2,7 @@ package bot.commands;
 
 import bot.BotUtils;
 import bot.entities.TDeclaredCommand;
-import bot.reps.CommandRep;
+import bot.mappers.CommandMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -15,12 +15,12 @@ import java.util.function.BiConsumer;
 public class DefaultCommand implements BiConsumer<AbsSender, Message> {
 
 
-    private final CommandRep commandRep;
+    private final CommandMapper commandMapper;
     private final BotUtils botUtils;
 
     @Autowired
-    public DefaultCommand(CommandRep commandRep, BotUtils botUtils) {
-        this.commandRep = commandRep;
+    public DefaultCommand(CommandMapper commandMapper, BotUtils botUtils) {
+        this.commandMapper = commandMapper;
         this.botUtils = botUtils;
     }
 
@@ -28,8 +28,8 @@ public class DefaultCommand implements BiConsumer<AbsSender, Message> {
     public void accept(AbsSender absSender, Message message) {
         try {
             Long chatId = message.getChatId();
-            String commandMessage = message.getText();
-            TDeclaredCommand command = commandRep.getByIdChatIdAndIdCommand(chatId, commandMessage);
+            String commandMessage = message.getText().substring(1);
+            TDeclaredCommand command = commandMapper.getByIdChatIdAndIdCommand(chatId, commandMessage);
             if (command == null) return;
             Message replyToMessage = message.getReplyToMessage();
             Integer msgId = null;
@@ -38,7 +38,7 @@ public class DefaultCommand implements BiConsumer<AbsSender, Message> {
             }
             String replyText = command.getCommand_text();
             botUtils.sendMessage(absSender, message.getChat(), replyText, msgId);
-            botUtils.deleteMessage(absSender, message);
+            botUtils.deleteMessage(absSender, message, absSender.getMe());
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }

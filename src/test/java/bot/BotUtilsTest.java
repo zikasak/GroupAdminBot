@@ -9,8 +9,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.telegram.telegrambots.meta.api.methods.groupadministration.GetChatMember;
 import org.telegram.telegrambots.meta.api.objects.Chat;
-import org.telegram.telegrambots.meta.api.objects.ChatMember;
 import org.telegram.telegrambots.meta.api.objects.User;
+import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMemberAdministrator;
+import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMemberMember;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
@@ -30,18 +31,18 @@ public class BotUtilsTest {
 
     @Test
     public void isUserAdminForAdminShouldBeTrue() throws TelegramApiException {
-        ChatMember adminChatMember = getAdminChatMember();
+        ChatMemberAdministrator adminChatMember = getAdminChatMember();
         User fio = adminChatMember.getUser();
         GetChatMember getChatMember = new GetChatMember(Long.toString(supergroup.getId()), fio.getId());
         when(sender.execute(getChatMember)).thenReturn(adminChatMember);
-        boolean userAdmin = botUtils.isUserAdmin(sender, supergroup, fio);
+        boolean userAdmin = botUtils.isUserAdmin(sender, supergroup, TestUtils.getUser());
         assertTrue(userAdmin);
     }
 
     @Test
     public void isUserAdminForAnonymousShouldBeTrue() throws TelegramApiException {
-        ChatMember anonymousAdminChatMember = getAnonymousAdminChatMember();
-        User fio = anonymousAdminChatMember.getUser();
+        ChatMemberAdministrator anonymousAdminChatMember = TestUtils.getAnonymousAdminChatMember();
+        User fio = TestUtils.getAnonymousUser();
         GetChatMember getChatMember = new GetChatMember(Long.toString(supergroup.getId()), fio.getId());
         when(sender.execute(getChatMember)).thenReturn(anonymousAdminChatMember);
         boolean userAdmin = botUtils.isUserAdmin(sender, supergroup, fio);
@@ -50,35 +51,21 @@ public class BotUtilsTest {
 
     @Test
     public void isUserAdminForCommonUserShouldBeFalse() throws TelegramApiException {
-        ChatMember commonChatMember = getCommonChatMember();
-        User fio = commonChatMember.getUser();
+        ChatMemberMember commonChatMember = TestUtils.getCommonChatMember();
+        User fio = TestUtils.getUser();
         GetChatMember getChatMember = new GetChatMember(Long.toString(supergroup.getId()), fio.getId());
         when(sender.execute(getChatMember)).thenReturn(commonChatMember);
         boolean userAdmin = botUtils.isUserAdmin(sender, supergroup, fio);
         assertFalse(userAdmin);
     }
 
-    private ChatMember getCommonChatMember() {
-        ChatMember chatMember = new ChatMember();
-        chatMember.setStatus("user");
-        chatMember.setUser(new User(1L, "fio", false));
-        return chatMember;
-    }
 
-    private ChatMember getAnonymousAdminChatMember() {
-        ChatMember chatMember = new ChatMember();
-        chatMember.setIsAnonymous(true);
-        chatMember.setStatus("administrator");
-        chatMember.setUser(new User(1087968824L, "fio", false));
-        return chatMember;
-    }
-
-
-    private ChatMember getAdminChatMember(){
-        User fio = new User(1L, "fio", false);
-        ChatMember chatMember = new ChatMember();
-        chatMember.setStatus("administrator");
+    private ChatMemberAdministrator getAdminChatMember(){
+        User fio = TestUtils.getUser();
+        ChatMemberAdministrator chatMember = new ChatMemberAdministrator();
         chatMember.setUser(fio);
         return chatMember;
     }
+
+
 }
