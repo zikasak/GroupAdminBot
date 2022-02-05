@@ -1,8 +1,4 @@
-hibernate:
-  jdbc:
-    time_zone:UTC
 spring:
-
   datasource:
     url: jdbc:postgresql://syno.local:52222/test
     username: test
