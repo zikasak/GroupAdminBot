@@ -1,8 +1,8 @@
-package bot.handlers;
+package bot.handlers.chatHandlers;
 
 import bot.BotUtils;
 import bot.entities.TGroup;
-import bot.mappers.ChatMapper;
+import bot.handlers.chatHandlers.NewMembersHandler;
 import bot.services.ChatService;
 import bot.utils.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,7 +20,6 @@ import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.time.ZonedDateTime;
-import java.util.HashSet;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;

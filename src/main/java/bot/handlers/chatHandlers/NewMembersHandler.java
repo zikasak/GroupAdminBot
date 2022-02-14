@@ -1,8 +1,7 @@
-package bot.handlers;
+package bot.handlers.chatHandlers;
 
 import bot.BotUtils;
 import bot.entities.TGroup;
-import bot.entities.TMutedUser;
 import bot.services.ChatService;
 import bot.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.objects.*;
-import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMember;
 import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMemberMember;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.bots.AbsSender;
@@ -18,12 +16,11 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.List;
 import java.util.Optional;
 
 @Component
 @Slf4j
-public class NewMembersHandler extends ChannelHandler {
+public class NewMembersHandler extends ChatHandler {
 
     private final ChatService chatService;
     private final StringUtils stringUtils;

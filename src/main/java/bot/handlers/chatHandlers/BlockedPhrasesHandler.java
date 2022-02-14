@@ -1,9 +1,8 @@
-package bot.handlers;
+package bot.handlers.chatHandlers;
 
 import bot.BotUtils;
 import bot.entities.TBlockedPhrase;
 import bot.entities.TGroup;
-import bot.mappers.ChatMapper;
 import bot.services.BlockedPhraseService;
 import bot.services.ChatService;
 import lombok.AllArgsConstructor;
@@ -18,7 +17,7 @@ import java.util.Set;
 
 @Component
 @AllArgsConstructor
-public class BlockedPhrasesHandler extends ChannelHandler {
+public class BlockedPhrasesHandler extends ChatHandler {
 
     private final ChatService chatRep;
     private final BotUtils botUtils;

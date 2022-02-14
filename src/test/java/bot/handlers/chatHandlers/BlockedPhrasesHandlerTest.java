@@ -1,9 +1,9 @@
-package bot.handlers;
+package bot.handlers.chatHandlers;
 
 import bot.BotUtils;
 import bot.entities.TBlockedPhrase;
 import bot.entities.TGroup;
-import bot.mappers.ChatMapper;
+import bot.handlers.chatHandlers.BlockedPhrasesHandler;
 import bot.services.BlockedPhraseService;
 import bot.services.ChatService;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,7 +20,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 

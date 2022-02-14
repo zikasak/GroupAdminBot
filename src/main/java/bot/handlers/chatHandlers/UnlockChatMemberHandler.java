@@ -1,4 +1,4 @@
-package bot.handlers;
+package bot.handlers.chatHandlers;
 
 import bot.BotUtils;
 import bot.entities.TMutedUser;
@@ -17,7 +17,7 @@ import java.time.ZonedDateTime;
 import java.util.Optional;
 
 @Component
-public class UnlockChatMemberHandler extends ChannelHandler {
+public class UnlockChatMemberHandler extends ChatHandler {
 
     private final MutedUserMapper mutedUserMapper;
     private final BotUtils botUtils;

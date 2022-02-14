@@ -1,11 +1,10 @@
-package bot.handlers;
+package bot.handlers.chatHandlers;
 
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-
-public abstract class ChannelHandler{
+public abstract class ChatHandler {
 
     protected abstract boolean checkHandle(AbsSender sender, Update update) throws TelegramApiException;
     public void handle(AbsSender sender, Update update) throws TelegramApiException {

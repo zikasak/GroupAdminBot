@@ -26,6 +26,11 @@
 			<version>${telegram.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>org.telegram</groupId>
+			<artifactId>telegrambots-chat-session-bot</artifactId>
+			<version>${telegram.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 			<scope>runtime</scope>

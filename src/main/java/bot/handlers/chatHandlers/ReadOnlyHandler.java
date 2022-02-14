@@ -1,12 +1,10 @@
-package bot.handlers;
+package bot.handlers.chatHandlers;
 
 import bot.BotUtils;
 import bot.entities.TGroup;
-import bot.mappers.ChatMapper;
 import bot.services.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.bots.AbsSender;
@@ -15,7 +13,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.util.Optional;
 
 @Component
-public class ReadOnlyHandler extends ChannelHandler {
+public class ReadOnlyHandler extends ChatHandler {
 
     private final ChatService chatService;
     private final BotUtils botUtils;
