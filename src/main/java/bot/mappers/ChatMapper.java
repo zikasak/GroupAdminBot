@@ -5,8 +5,10 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.telegram.telegrambots.meta.api.objects.User;
 
 import java.util.Optional;
+import java.util.Set;
 
 @Mapper
 public interface ChatMapper {
@@ -30,4 +32,24 @@ public interface ChatMapper {
     void save(@Param("chat") TGroup chat);
 
 
+    @Select("""
+            select
+            tg.chat_id chat_id,
+            tg.new_users_blocked new_users_blocked,
+            tg.read_only read_only,
+            tg.time_to_mute time_to_mute,
+            tg.wel_message wel_message
+            from
+            t_groups_admins tga
+            join t_groups tg on
+            tg.chat_id = tga.chat_id
+            where
+            tga.user_id = #{userId}""")
+    Set<TGroup> getGroupForUser(@Param("userId") long userId);
+
+    @Insert("""
+            INSERT INTO t_groups_admins
+            VALUES (chat_id, user_id)
+            (#{tGroup.id}, #{user.id}) ON CONFLICT DO NOTHING""")
+    void addAdministrator(@Param("tGroup") TGroup tGroup, @Param("user") User user);
 }
