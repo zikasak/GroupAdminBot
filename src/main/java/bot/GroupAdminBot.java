@@ -1,5 +1,6 @@
 package bot;
 import bot.commands.DefaultCommand;
+import bot.control.StateController;
 import bot.handlers.chatHandlers.ChatHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.session.Session;
@@ -30,13 +31,16 @@ public class GroupAdminBot extends TelegramLongPollingCommandBot {
     @Value("${botToken}")
     private String botToken;
     private final ChatHandler[] handlers;
-    private DefaultSessionManager sessionManager;
-    private ChatIdConverter chatIdConverter;
+    private final StateController stateController;
+    private final DefaultSessionManager sessionManager;
+    private final ChatIdConverter chatIdConverter;
 
     @Autowired
-    public GroupAdminBot(DefaultCommand def, IBotCommand[] commands, ChatHandler[] handlers, AllUpdatesBotOptions botOptions) {
+    public GroupAdminBot(DefaultCommand def, IBotCommand[] commands, ChatHandler[] handlers, AllUpdatesBotOptions botOptions,
+                         StateController stateController) {
         super(botOptions);
         this.handlers = handlers;
+        this.stateController = stateController;
         this.sessionManager = new DefaultSessionManager();
         this.chatIdConverter = new DefaultChatIdConverter();
         AbstractSessionDAO sessionDAO = (AbstractSessionDAO)this.sessionManager.getSessionDAO();
@@ -67,22 +71,18 @@ public class GroupAdminBot extends TelegramLongPollingCommandBot {
 
     private void proceedControlMessage(Update update) {
         Message message = update.getMessage();
-        Optional<Session> chatSession = getSession(message);
+        Session chatSession;
         this.chatIdConverter.setSessionId(message.getChatId());
         chatSession = this.getSession(message);
-        this.onUpdateReceived(update, chatSession);
+        this.stateController.onUpdateReceived(this, update, chatSession);
     }
 
-    private void onUpdateReceived(Update update, Optional<Session> chatSession) {
-
-    }
-
-    public Optional<Session> getSession(Message message) {
+    public Session getSession(Message message) {
         try {
-            return Optional.of(this.sessionManager.getSession(this.chatIdConverter));
+            return this.sessionManager.getSession(this.chatIdConverter);
         } catch (UnknownSessionException var4) {
             SessionContext botSession = new DefaultChatSessionContext(message.getChatId(), message.getFrom().getUserName());
-            return Optional.of(this.sessionManager.start(botSession));
+            return this.sessionManager.start(botSession);
         }
     }
     @Override
