@@ -1,6 +1,5 @@
 package bot.control.states;
 
-import bot.control.ProcessingResult;
 import bot.entities.TGroup;
 import bot.services.ChatService;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
@@ -31,12 +31,12 @@ public class SelectChatHandler implements StateHandler {
     }
 
     @Override
-    public State getHandlingState() {
+    public State handlingState() {
         return State.SELECTING_CHAT;
     }
 
     @Override
-    public ProcessingResult onUpdateReceived(AbsSender sender, Update update, Session session) throws TelegramApiException {
+    public void handleStateEnter(AbsSender sender, Update update, Session session) throws TelegramApiException {
         Long userId = update.getCallbackQuery().getFrom().getId();
         Set<TGroup> groupList = chatService.getGroupList(userId);
         List<InlineKeyboardButton> buttons = groupList.stream()
@@ -48,6 +48,11 @@ public class SelectChatHandler implements StateHandler {
                 .replyMarkup(keyboardMarkup)
                 .build();
         sender.execute(message);
-        return ProcessingResult.later(State.SELECT_CHAT);
     }
+
+    @Override
+    public State handleStateExecution(AbsSender sender, Update update, Session session) throws TelegramApiException, IOException {
+        return null;
+    }
+
 }

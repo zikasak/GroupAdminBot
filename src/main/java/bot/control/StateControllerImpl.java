@@ -10,6 +10,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -23,19 +24,21 @@ public class StateControllerImpl implements StateController {
 
     public StateControllerImpl(List<StateHandler> handlerList) {
         handlers = handlerList.stream()
-                .collect(Collectors.toMap(StateHandler::getHandlingState, Function.identity()));
+                .collect(Collectors.toMap(StateHandler::handlingState, Function.identity()));
     }
 
     @Override
     public void onUpdateReceived(AbsSender sender, Update update, Session chatSession) {
-        ProcessingResult state = (ProcessingResult) chatSession.getAttribute(Constants.STATE);
-        if (state == null) state = ProcessingResult.immediately(State.UNKNOWN);
+        State state = (State) chatSession.getAttribute(Constants.STATE);
         try {
-            while (state.callImmediately()) {
-                state = handlers.get(state.state()).onUpdateReceived(sender, update, chatSession);
-                chatSession.setAttribute(Constants.STATE, state);
+            if (state != null) { // null means start from scratch
+                state = handlers.get(state).handleStateExecution(sender, update, chatSession);
+            } else {
+                state = State.UNKNOWN;
             }
-        } catch (TelegramApiException e) {
+            handlers.get(state).handleStateEnter(sender, update, chatSession);
+            chatSession.setAttribute(Constants.STATE, state);
+        } catch (TelegramApiException | IOException e) {
             chatSession.getAttributeKeys().forEach(chatSession::removeAttribute);
             log.error(e.getMessage(), e);
         }
