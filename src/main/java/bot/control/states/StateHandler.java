@@ -1,5 +1,6 @@
 package bot.control.states;
 
+import bot.control.ProcessingResult;
 import org.apache.shiro.session.Session;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.bots.AbsSender;
@@ -9,5 +10,5 @@ public interface StateHandler {
 
     State getHandlingState();
 
-    State onUpdateReceived(AbsSender sender, Update update, Session session) throws TelegramApiException;
+    ProcessingResult onUpdateReceived(AbsSender sender, Update update, Session session) throws TelegramApiException;
 }

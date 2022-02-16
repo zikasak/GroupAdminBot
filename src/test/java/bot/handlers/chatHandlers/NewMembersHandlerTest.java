@@ -2,7 +2,6 @@ package bot.handlers.chatHandlers;
 
 import bot.BotUtils;
 import bot.entities.TGroup;
-import bot.handlers.chatHandlers.NewMembersHandler;
 import bot.services.ChatService;
 import bot.utils.StringUtils;
 import org.junit.jupiter.api.BeforeEach;

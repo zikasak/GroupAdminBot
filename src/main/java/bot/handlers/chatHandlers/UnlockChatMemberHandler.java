@@ -24,6 +24,7 @@ public class UnlockChatMemberHandler extends ChatHandler {
 
     @Autowired
     public UnlockChatMemberHandler(MutedUserMapper mutedUserMapper, BotUtils botUtils) {
+        super();
         this.mutedUserMapper = mutedUserMapper;
         this.botUtils = botUtils;
     }

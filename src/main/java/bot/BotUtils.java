@@ -29,7 +29,9 @@ public class BotUtils {
 
     public boolean isUserAdmin(AbsSender sender, Message message) throws TelegramApiException {
         Chat senderChat = message.getSenderChat();
-        if (senderChat != null) return true;
+        if (senderChat != null) {
+            return true;
+        }
         Chat chat = message.getChat();
         User user = message.getFrom();
         return isUserAdmin(sender, chat, user);
@@ -37,7 +39,7 @@ public class BotUtils {
 
     public boolean isUserAdmin(AbsSender sender, Chat chat, User user) throws TelegramApiException {
         ChatMember chatMember = getChatMember(sender, chat, user);
-        return chatMember.getStatus().equals("administrator") || chatMember.getStatus().equals("creator");
+        return "administrator".equals(chatMember.getStatus()) || "creator".equals(chatMember.getStatus());
     }
 
     public Message sendMessage(AbsSender sender, Chat chat, String text) throws TelegramApiException {

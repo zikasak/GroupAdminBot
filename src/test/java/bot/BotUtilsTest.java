@@ -21,7 +21,7 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @ExtendWith({SpringExtension.class, MockitoExtension.class})
-public class BotUtilsTest {
+class BotUtilsTest {
 
     @Autowired
     private BotUtils botUtils;

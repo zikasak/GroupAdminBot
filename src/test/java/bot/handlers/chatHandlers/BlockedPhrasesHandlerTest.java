@@ -3,7 +3,6 @@ package bot.handlers.chatHandlers;
 import bot.BotUtils;
 import bot.entities.TBlockedPhrase;
 import bot.entities.TGroup;
-import bot.handlers.chatHandlers.BlockedPhrasesHandler;
 import bot.services.BlockedPhraseService;
 import bot.services.ChatService;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,7 +31,7 @@ public class BlockedPhrasesHandlerTest {
     private final BlockedPhrasesHandler handler;
     private final ChatService chatRep;
     private final BotUtils botUtils;
-    private BlockedPhraseService blockedPhraseService;
+    private final BlockedPhraseService blockedPhraseService;
     private final AbsSender absSender;
 
     public BlockedPhrasesHandlerTest(@Mock ChatService chatRep, @Mock BotUtils botUtils, @Mock BlockedPhraseService blockedPhraseService) {

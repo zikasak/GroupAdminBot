@@ -1,5 +1,6 @@
 package bot.control.states;
 
+import bot.control.ProcessingResult;
 import bot.entities.TGroup;
 import bot.services.ChatService;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,7 @@ public class SelectChatHandler implements StateHandler {
     }
 
     @Override
-    public State onUpdateReceived(AbsSender sender, Update update, Session session) throws TelegramApiException {
+    public ProcessingResult onUpdateReceived(AbsSender sender, Update update, Session session) throws TelegramApiException {
         Long userId = update.getCallbackQuery().getFrom().getId();
         Set<TGroup> groupList = chatService.getGroupList(userId);
         List<InlineKeyboardButton> buttons = groupList.stream()
@@ -47,6 +48,6 @@ public class SelectChatHandler implements StateHandler {
                 .replyMarkup(keyboardMarkup)
                 .build();
         sender.execute(message);
-        return State.SELECT_CHAT;
+        return ProcessingResult.later(State.SELECT_CHAT);
     }
 }

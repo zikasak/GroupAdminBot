@@ -8,11 +8,6 @@ import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import bot.services.CommandService;
-
-import java.util.Arrays;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Component
 @Slf4j

@@ -2,7 +2,6 @@ package bot.handlers.chatHandlers;
 
 import bot.BotUtils;
 import bot.TestUtils;
-import bot.handlers.chatHandlers.ReadOnlyHandler;
 import bot.services.ChatService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,9 +24,9 @@ import static org.mockito.Mockito.*;
 @ExtendWith({SpringExtension.class, MockitoExtension.class})
 public class ReadOnlyHandlerTest {
 
-    private ReadOnlyHandler handler;
-    private BotUtils botUtils;
-    private ChatService chatService;
+    private final ReadOnlyHandler handler;
+    private final BotUtils botUtils;
+    private final ChatService chatService;
     private final AbsSender absSender;
 
     public ReadOnlyHandlerTest(@Mock ChatService chatService, @Mock BotUtils botUtils) {

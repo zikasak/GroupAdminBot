@@ -1,7 +1,6 @@
 package bot.mappers;
 
 import bot.entities.TBlockedPhrase;
-import bot.entities.TDeclaredCommand;
 import org.apache.ibatis.annotations.*;
 
 import java.util.Set;
@@ -13,9 +12,11 @@ public interface BlockedPhraseMapper {
             "WHERE chat_id=#{chatId} AND blocked_phrase=#{phrase};")
     void delete(@Param("chatId") Long chatId, @Param("phrase") String phrase);
 
-    @Insert("INSERT INTO t_blocked_phrase\n" +
-            "(chat_id, blocked_phrase)\n" +
-            "VALUES(#{chatId}, #{phrase});\n")
+    @Insert("""
+            INSERT INTO t_blocked_phrase
+            (chat_id, blocked_phrase)
+            VALUES(#{chatId}, #{phrase});
+            """)
     void save(@Param("chatId") Long chatId, @Param("phrase") String phrase);
 
     @Select("SELECT chat_id, blocked_phrase " +

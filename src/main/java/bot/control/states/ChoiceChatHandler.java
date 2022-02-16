@@ -1,6 +1,7 @@
 package bot.control.states;
 
 import bot.Constants;
+import bot.control.ProcessingResult;
 import lombok.RequiredArgsConstructor;
 import org.apache.shiro.session.Session;
 import org.springframework.stereotype.Component;
@@ -22,13 +23,13 @@ public class ChoiceChatHandler implements StateHandler {
     }
 
     @Override
-    public State onUpdateReceived(AbsSender sender, Update update, Session session) throws TelegramApiException {
+    public ProcessingResult onUpdateReceived(AbsSender sender, Update update, Session session) throws TelegramApiException {
         var chat = Long.valueOf(update.getCallbackQuery().getMessage().getText());
         Set<Long> chats = (Set<Long>) session.getAttribute(Constants.CHOSEN_CHATS);
         if (chats == null) chats = new HashSet<>();
         if (chats.contains(chat)) chats.remove(chat);
         else chats.add(chat);
         session.setAttribute(Constants.CHOSEN_CHATS, chats);
-        return State.SELECTING_CHAT;
+        return ProcessingResult.immediately(State.SELECTING_CHAT);
     }
 }

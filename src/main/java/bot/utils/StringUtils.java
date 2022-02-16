@@ -12,15 +12,16 @@ public class StringUtils {
 
     private final IParameterReplacer[] replacers;
     @Autowired
-    public StringUtils(IParameterReplacer[] replacers) {
+    public StringUtils(IParameterReplacer... replacers) {
         this.replacers = replacers;
     }
 
     public String fillParams(String text, Chat chat, User user ) {
+        String result = text;
         for (IParameterReplacer replacer : replacers) {
-            text = replacer.replaceWith(text, chat, user);
+            result = replacer.replaceWith(result, chat, user);
         }
-        return text;
+        return result;
     }
 
 

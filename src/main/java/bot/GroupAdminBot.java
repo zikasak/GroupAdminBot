@@ -20,7 +20,6 @@ import org.telegram.telegrambots.session.ChatIdConverter;
 import org.telegram.telegrambots.session.DefaultChatIdConverter;
 import org.telegram.telegrambots.session.DefaultChatSessionContext;
 
-import java.util.Optional;
 
 @Component
 @Slf4j
@@ -63,7 +62,6 @@ public class GroupAdminBot extends TelegramLongPollingCommandBot {
             try {
                 handler.handle(this, update);
             } catch (Exception e) {
-                e.printStackTrace();
                 log.error(e.getMessage(), e);
             }
         }
@@ -97,7 +95,7 @@ public class GroupAdminBot extends TelegramLongPollingCommandBot {
         return this.botToken;
     }
 
-    private void initialize(DefaultCommand defaultCommand, IBotCommand[] registry){
+    private void initialize(DefaultCommand defaultCommand, IBotCommand... registry){
         this.registerDefaultAction(defaultCommand);
         this.registerAll(registry);
     }

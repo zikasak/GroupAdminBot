@@ -11,18 +11,15 @@ import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.Arrays;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
 @Slf4j
 public class AddDeclaredCommand extends DeclaredCommand{
 
-    private final ChatService chatService;
 
-    public AddDeclaredCommand(ChatService chatService){
+    public AddDeclaredCommand(){
         super("add", true, true, true);
-        this.chatService = chatService;
     }
 
     @Override

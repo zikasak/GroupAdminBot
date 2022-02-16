@@ -28,6 +28,7 @@ public class NewMembersHandler extends ChatHandler {
 
     @Autowired
     public NewMembersHandler(ChatService chatService, StringUtils stringUtils, BotUtils botUtils) {
+        super();
         this.chatService = chatService;
         this.stringUtils = stringUtils;
         this.botUtils = botUtils;
@@ -37,7 +38,7 @@ public class NewMembersHandler extends ChatHandler {
     protected boolean checkHandle(AbsSender sender, Update update) {
         ChatMemberUpdated updateChatMember = update.getChatMember();
         if (updateChatMember == null) return false;
-        return updateChatMember.getNewChatMember().getStatus().equals("member");
+        return "member".equals(updateChatMember.getNewChatMember().getStatus());
     }
 
     @Override

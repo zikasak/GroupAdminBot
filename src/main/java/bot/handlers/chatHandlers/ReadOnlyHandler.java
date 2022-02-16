@@ -20,6 +20,7 @@ public class ReadOnlyHandler extends ChatHandler {
 
     @Autowired
     public ReadOnlyHandler(ChatService chatService, BotUtils botUtils) {
+        super();
         this.chatService = chatService;
         this.botUtils = botUtils;
     }

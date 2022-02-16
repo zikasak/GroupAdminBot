@@ -3,6 +3,7 @@ package bot.commands;
 import bot.BotUtils;
 import bot.entities.TDeclaredCommand;
 import bot.mappers.CommandMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -12,6 +13,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.util.function.BiConsumer;
 
 @Component
+@Slf4j
 public class DefaultCommand implements BiConsumer<AbsSender, Message> {
 
 
@@ -40,7 +42,7 @@ public class DefaultCommand implements BiConsumer<AbsSender, Message> {
             botUtils.sendMessage(absSender, message.getChat(), replyText, msgId);
             botUtils.deleteMessage(absSender, message, absSender.getMe());
         } catch (TelegramApiException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         }
     }
 }

@@ -28,15 +28,16 @@ public class StateControllerImpl implements StateController {
 
     @Override
     public void onUpdateReceived(AbsSender sender, Update update, Session chatSession) {
-        State state = (State) chatSession.getAttribute(Constants.STATE);
-        if (state == null) state = State.UNKNOWN;
+        ProcessingResult state = (ProcessingResult) chatSession.getAttribute(Constants.STATE);
+        if (state == null) state = ProcessingResult.immediately(State.UNKNOWN);
         try {
-            State resultingState = handlers.get(state).onUpdateReceived(sender, update, chatSession);
-            chatSession.setAttribute(Constants.STATE, resultingState);
+            while (state.callImmediately()) {
+                state = handlers.get(state.state()).onUpdateReceived(sender, update, chatSession);
+                chatSession.setAttribute(Constants.STATE, state);
+            }
         } catch (TelegramApiException e) {
             chatSession.getAttributeKeys().forEach(chatSession::removeAttribute);
             log.error(e.getMessage(), e);
-            e.printStackTrace();
         }
 
     }
