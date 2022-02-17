@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import org.telegram.telegrambots.extensions.bots.commandbot.TelegramLongPollingCommandBot;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.IBotCommand;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.session.ChatIdConverter;
@@ -54,7 +55,7 @@ public class GroupAdminBot extends TelegramLongPollingCommandBot {
 
     @Override
     public void processNonCommandUpdate(Update update) {
-        if (update.hasMessage() && !filter(update.getMessage())) {
+        if ((update.hasMessage() || update.hasCallbackQuery()) && !filter(update)) {
             proceedControlMessage(update);
             return;
         }
@@ -70,9 +71,15 @@ public class GroupAdminBot extends TelegramLongPollingCommandBot {
     private void proceedControlMessage(Update update) {
         Message message = update.getMessage();
         Session chatSession;
-        this.chatIdConverter.setSessionId(message.getChatId());
+        this.chatIdConverter.setSessionId(getChatId(update));
         chatSession = this.getSession(message);
         this.stateController.onUpdateReceived(this, update, chatSession);
+    }
+
+    private Long getChatId(Update update) {
+        if (update.hasMessage()) return update.getMessage().getChatId();
+        if (update.hasCallbackQuery()) return update.getCallbackQuery().getFrom().getId();
+        return null;
     }
 
     public Session getSession(Message message) {
@@ -83,11 +90,21 @@ public class GroupAdminBot extends TelegramLongPollingCommandBot {
             return this.sessionManager.start(botSession);
         }
     }
-    @Override
-    public boolean filter(Message message) {
-        Long chatId = message.getChat().getId();
-        Long userId = message.getFrom().getId();
-        return !chatId.equals(userId);
+
+    public boolean filter(Update update) {
+        if (update.hasMessage()) {
+            Message message = update.getMessage();
+            Long chatId = message.getChat().getId();
+            Long userId = message.getFrom().getId();
+            return !chatId.equals(userId);
+        }
+        if (update.hasCallbackQuery()){
+            CallbackQuery callbackQuery = update.getCallbackQuery();
+            Long userId = callbackQuery.getFrom().getId();
+            Long chatId = callbackQuery.getMessage().getChatId();
+            return !chatId.equals(userId);
+        }
+        return false;
     }
 
     @Override
