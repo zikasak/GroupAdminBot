@@ -11,7 +11,9 @@ public interface StateHandler {
 
     State handlingState();
 
-    void handleStateEnter(AbsSender sender, Update update, Session session) throws TelegramApiException, IOException;
+    default void handleStateEnter(AbsSender sender, Update update, Session session) throws TelegramApiException, IOException {}
 
     State handleStateExecution(AbsSender sender, Update update, Session session) throws TelegramApiException, IOException;
+
+    default void handleStateLeaving(AbsSender sender, Update update, Session session) throws TelegramApiException, IOException {}
 }
