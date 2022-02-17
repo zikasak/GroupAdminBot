@@ -26,19 +26,25 @@ public class UnknownHandler implements StateHandler{
 
     @Override
     public void handleStateEnter(AbsSender sender, Update update, Session session) throws TelegramApiException, IOException {
-        InputStream resourceAsStream = getClass().getResourceAsStream("InitialKeyboard.json");
+        InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream("InitialKeyboard.json");
         ObjectMapper objectMapper = new ObjectMapper();
         List<InlineKeyboardButton> keys = Arrays.stream(objectMapper.readValue(resourceAsStream, KeyData[].class))
                 .map(KeyData::button).toList();
         InlineKeyboardMarkup keyboard = InlineKeyboardMarkup.builder()
                 .keyboard(ListUtils.partition(keys, 1))
                 .build();
-        SendMessage message = SendMessage.builder().replyMarkup(keyboard).chatId(String.valueOf(update.getMessage().getFrom().getId())).build();
+        SendMessage message = SendMessage.builder()
+                .text("Выберите действие")
+                .replyMarkup(keyboard)
+                .chatId(String.valueOf(update.getMessage().getFrom().getId()))
+                .build();
         sender.execute(message);
     }
 
     @Override
     public State handleStateExecution(AbsSender sender, Update update, Session session) throws TelegramApiException, IOException {
-        return null;
+        if (!update.hasCallbackQuery()) return State.UNKNOWN;
+        String data = update.getCallbackQuery().getData();
+        return State.valueOf(data);
     }
 }
