@@ -10,6 +10,6 @@ public class AllUpdatesBotOptions extends DefaultBotOptions {
 
     public AllUpdatesBotOptions() {
         super();
-        this.setAllowedUpdates(List.of("message", "chat_member"));
+        this.setAllowedUpdates(List.of("message", "chat_member", "callback_query"));
     }
 }
