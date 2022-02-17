@@ -1,5 +1,6 @@
 package bot.control.states;
 
+import bot.Constants;
 import bot.entities.TGroup;
 import bot.services.ChatService;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -45,6 +47,7 @@ public class SelectChatHandler implements StateHandler {
         InlineKeyboardMarkup keyboardMarkup = InlineKeyboardMarkup.builder().keyboard(keyboard).build();
         SendMessage message = SendMessage.builder()
                 .chatId(String.valueOf(userId))
+                .text("Выберите чаты")
                 .replyMarkup(keyboardMarkup)
                 .build();
         sender.execute(message);
@@ -52,7 +55,13 @@ public class SelectChatHandler implements StateHandler {
 
     @Override
     public State handleStateExecution(AbsSender sender, Update update, Session session) throws TelegramApiException, IOException {
-        return null;
+        var chat = Long.valueOf(update.getCallbackQuery().getData());
+        Set<Long> chats = (Set<Long>) session.getAttribute(Constants.CHOSEN_CHATS);
+        if (chats == null) chats = new HashSet<>();
+        if (chats.contains(chat)) chats.remove(chat);
+        else chats.add(chat);
+        session.setAttribute(Constants.CHOSEN_CHATS, chats);
+        return State.SELECTING_CHAT;
     }
 
 }
