@@ -35,6 +35,7 @@ public interface ChatMapper {
     @Select("""
             select
             tg.chat_id chat_id,
+            tg.chat_name chat_name,
             tg.new_users_blocked new_users_blocked,
             tg.read_only read_only,
             tg.time_to_mute time_to_mute,
@@ -49,7 +50,7 @@ public interface ChatMapper {
 
     @Insert("""
             INSERT INTO t_groups_admins
-            VALUES (chat_id, user_id)
-            (#{tGroup.id}, #{user.id}) ON CONFLICT DO NOTHING""")
+            (chat_id, user_id)
+            VALUES (#{tGroup.chat_id}, #{user.id}) ON CONFLICT DO NOTHING""")
     void addAdministrator(@Param("tGroup") TGroup tGroup, @Param("user") User user);
 }
