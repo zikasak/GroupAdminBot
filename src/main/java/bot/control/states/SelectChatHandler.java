@@ -3,6 +3,7 @@ package bot.control.states;
 import bot.Constants;
 import bot.entities.TGroup;
 import bot.services.ChatService;
+import bot.utils.TelegramUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.shiro.session.Session;
@@ -43,7 +44,7 @@ public class SelectChatHandler implements StateHandler {
         Set<TGroup> groupList = chatService.getGroupList(userId);
         List<InlineKeyboardButton> buttons = groupList.stream()
                 .map(SelectChatHandler::createKeyboardButton).toList();
-        List<List<InlineKeyboardButton>> keyboard = ListUtils.partition(buttons, 3);
+        List<List<InlineKeyboardButton>> keyboard = TelegramUtils.getKeyboardWithBackButton(buttons, 3, State.UNKNOWN);
         InlineKeyboardMarkup keyboardMarkup = InlineKeyboardMarkup.builder().keyboard(keyboard).build();
         SendMessage message = SendMessage.builder()
                 .chatId(String.valueOf(userId))

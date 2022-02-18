@@ -2,6 +2,7 @@ package bot.control.states;
 
 import bot.Constants;
 import bot.services.ChatService;
+import bot.utils.TelegramUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.shiro.session.Session;
 import org.springframework.stereotype.Component;
@@ -30,12 +31,14 @@ public class ChangeReadOnlyHandler implements StateHandler{
 
     @Override
     public void handleStateEnter(AbsSender sender, Update update, Session session) throws TelegramApiException, IOException {
-        List<InlineKeyboardButton> turnOnBtn = List.of(InlineKeyboardButton.builder().text("Включить").callbackData("TURN_ON").build());
-        List<InlineKeyboardButton> turnOffBtn = List.of(InlineKeyboardButton.builder().text("Выключить").callbackData("TURN_OFF").build());
-        InlineKeyboardMarkup keyboard = InlineKeyboardMarkup.builder().keyboard(List.of(turnOnBtn, turnOffBtn)).build();
+        List<InlineKeyboardButton> buttons = List.of(InlineKeyboardButton.builder().text("Включить").callbackData("TURN_ON").build(),
+                InlineKeyboardButton.builder().text("Выключить").callbackData("TURN_OFF").build());
+
+        List<List<InlineKeyboardButton>> keyboard = TelegramUtils.getKeyboardWithBackButton(buttons, 1, State.UNKNOWN);
+        InlineKeyboardMarkup keyboardMarkup = InlineKeyboardMarkup.builder().keyboard(keyboard).build();
         SendMessage message = SendMessage.builder().text("Выберите действие")
                 .chatId(String.valueOf(update.getCallbackQuery().getFrom().getId()))
-                .replyMarkup(keyboard)
+                .replyMarkup(keyboardMarkup)
                 .build();
         sender.execute(message);
     }
