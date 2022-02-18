@@ -1,4 +1,7 @@
 [{
   "text": "Выбрать группу",
   "state": "SELECTING_CHAT"
+}, {
+  "text": "Переключить режим 'Только чтение'",
+  "state": "CHANGING_READ_ONLY"
 }]
