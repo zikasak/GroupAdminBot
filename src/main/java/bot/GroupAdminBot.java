@@ -1,6 +1,7 @@
 package bot;
 import bot.commands.DefaultCommand;
 import bot.control.StateController;
+import bot.control.states.State;
 import bot.handlers.chatHandlers.ChatHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.session.Session;
@@ -20,6 +21,9 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.session.ChatIdConverter;
 import org.telegram.telegrambots.session.DefaultChatIdConverter;
 import org.telegram.telegrambots.session.DefaultChatSessionContext;
+
+import java.util.HashSet;
+import java.util.Stack;
 
 
 @Component
@@ -87,7 +91,12 @@ public class GroupAdminBot extends TelegramLongPollingCommandBot {
             return this.sessionManager.getSession(this.chatIdConverter);
         } catch (UnknownSessionException var4) {
             SessionContext botSession = new DefaultChatSessionContext(message.getChatId(), message.getFrom().getUserName());
-            return this.sessionManager.start(botSession);
+            Session session = this.sessionManager.start(botSession);
+            Stack<State> states = new Stack<>();
+            states.push(State.UNKNOWN);
+            session.setAttribute(Constants.CHOSEN_CHATS, new HashSet<Long>());
+            session.setAttribute(Constants.STATE_STACK, states);
+            return session;
         }
     }
 

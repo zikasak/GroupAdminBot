@@ -34,7 +34,7 @@ public class ChangeReadOnlyHandler implements StateHandler{
         List<InlineKeyboardButton> buttons = List.of(InlineKeyboardButton.builder().text("Включить").callbackData("TURN_ON").build(),
                 InlineKeyboardButton.builder().text("Выключить").callbackData("TURN_OFF").build());
 
-        List<List<InlineKeyboardButton>> keyboard = TelegramUtils.getKeyboardWithBackButton(buttons, 1, State.UNKNOWN);
+        List<List<InlineKeyboardButton>> keyboard = TelegramUtils.getKeyboardWithBackButton(buttons, 1);
         InlineKeyboardMarkup keyboardMarkup = InlineKeyboardMarkup.builder().keyboard(keyboard).build();
         SendMessage message = SendMessage.builder().text("Выберите действие")
                 .chatId(String.valueOf(update.getCallbackQuery().getFrom().getId()))

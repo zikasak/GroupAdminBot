@@ -1,6 +1,7 @@
 package bot.control.states;
 
 import bot.control.KeyData;
+import bot.utils.TelegramUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.shiro.session.Session;
@@ -36,7 +37,7 @@ public class UnknownHandler implements StateHandler{
         SendMessage message = SendMessage.builder()
                 .text("Выберите действие")
                 .replyMarkup(keyboard)
-                .chatId(String.valueOf(update.getMessage().getFrom().getId()))
+                .chatId(String.valueOf(TelegramUtils.getChatId(update)))
                 .build();
         sender.execute(message);
     }

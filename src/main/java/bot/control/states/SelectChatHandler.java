@@ -44,7 +44,7 @@ public class SelectChatHandler implements StateHandler {
         Set<TGroup> groupList = chatService.getGroupList(userId);
         List<InlineKeyboardButton> buttons = groupList.stream()
                 .map(SelectChatHandler::createKeyboardButton).toList();
-        List<List<InlineKeyboardButton>> keyboard = TelegramUtils.getKeyboardWithBackButton(buttons, 3, State.UNKNOWN);
+        List<List<InlineKeyboardButton>> keyboard = TelegramUtils.getKeyboardWithBackButton(buttons, 3);
         InlineKeyboardMarkup keyboardMarkup = InlineKeyboardMarkup.builder().keyboard(keyboard).build();
         SendMessage message = SendMessage.builder()
                 .chatId(String.valueOf(userId))
@@ -58,7 +58,6 @@ public class SelectChatHandler implements StateHandler {
     public State handleStateExecution(AbsSender sender, Update update, Session session) throws TelegramApiException, IOException {
         var chat = Long.valueOf(update.getCallbackQuery().getData());
         Set<Long> chats = (Set<Long>) session.getAttribute(Constants.CHOSEN_CHATS);
-        if (chats == null) chats = new HashSet<>();
         if (chats.contains(chat)) chats.remove(chat);
         else chats.add(chat);
         session.setAttribute(Constants.CHOSEN_CHATS, chats);
