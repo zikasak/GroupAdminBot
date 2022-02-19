@@ -98,6 +98,11 @@ public class GroupAdminBot extends TelegramLongPollingCommandBot {
         }
     }
 
+    @Override
+    public boolean filter(Message message) {
+       return message.getText().contains("/start");
+    }
+
     public boolean filter(Update update) {
         if (update.hasMessage()) {
             Message message = update.getMessage();
