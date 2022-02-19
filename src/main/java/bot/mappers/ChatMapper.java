@@ -15,6 +15,7 @@ public interface ChatMapper {
 
     @Select("select " +
             "chat_id  chat_id," +
+            "chat_name chat_name," +
             "new_users_blocked new_users_blocked," +
             "read_only read_only," +
             "time_to_mute time_to_mute," +
