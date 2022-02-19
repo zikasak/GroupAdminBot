@@ -3,6 +3,7 @@ import bot.commands.DefaultCommand;
 import bot.control.StateController;
 import bot.control.states.State;
 import bot.handlers.chatHandlers.ChatHandler;
+import bot.utils.TelegramUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.session.UnknownSessionException;
@@ -92,10 +93,7 @@ public class GroupAdminBot extends TelegramLongPollingCommandBot {
         } catch (UnknownSessionException var4) {
             SessionContext botSession = new DefaultChatSessionContext(message.getChatId(), message.getFrom().getUserName());
             Session session = this.sessionManager.start(botSession);
-            Stack<State> states = new Stack<>();
-            states.push(State.UNKNOWN);
-            session.setAttribute(Constants.CHOSEN_CHATS, new HashSet<Long>());
-            session.setAttribute(Constants.STATE_STACK, states);
+            TelegramUtils.clearSession(session);
             return session;
         }
     }

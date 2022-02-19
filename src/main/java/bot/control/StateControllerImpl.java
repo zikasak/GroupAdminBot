@@ -3,6 +3,8 @@ package bot.control;
 import bot.Constants;
 import bot.control.states.State;
 import bot.control.states.StateHandler;
+import bot.exceptions.WrongStateException;
+import bot.utils.TelegramUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.session.Session;
 import org.springframework.stereotype.Component;
@@ -36,14 +38,25 @@ public class StateControllerImpl implements StateController {
         try {
             if (!stateChanged)
                 currentState = handlers.get(currentState).handleStateExecution(sender, update, chatSession);
-            handlers.get(currentState).handleStateEnter(sender, update, chatSession);
+           callStateEnterHandler(currentState, sender, update, chatSession);
             if (!currentState.equals(states.peek()))
                 states.push(currentState);
         } catch (TelegramApiException | IOException e) {
-            chatSession.getAttributeKeys().forEach(chatSession::removeAttribute);
+            TelegramUtils.clearSession(chatSession);
+            states = (Stack<State>) chatSession.getAttribute(Constants.STATE_STACK);
+            currentState = states.peek();
+            callStateEnterHandler(currentState, sender, update, chatSession);
             log.error(e.getMessage(), e);
         }
 
+    }
+
+    private void callStateEnterHandler(State state, AbsSender sender, Update update, Session session) {
+        try {
+            handlers.get(state).handleStateEnter(sender, update, session);
+        } catch (TelegramApiException | IOException e) {
+            throw new WrongStateException(e.getMessage(), e);
+        }
     }
 
     private boolean proceedStateControlMessage(Update update, Stack<State> states) {
