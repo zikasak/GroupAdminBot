@@ -1,6 +1,7 @@
 package bot.control.states;
 
 import bot.Constants;
+import bot.entities.TGroup;
 import bot.services.ChatService;
 import bot.utils.TelegramUtils;
 import lombok.RequiredArgsConstructor;
@@ -49,14 +50,25 @@ public class ChangeReadOnlyHandler implements StateHandler{
         if (chats.isEmpty()) return State.UNKNOWN;
         String data = update.getCallbackQuery().getData();
         if (!possibleValues.contains(data)) return State.UNKNOWN;
-        chats.stream()
-                .map(chatService::get)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .forEach((tGroup) -> {
-                    tGroup.setRead_only("TURN_ON".equals(data));
-                    chatService.save(tGroup);
-                });
+        boolean turnOnReadOnly = "TURN_ON".equals(data);
+        for (Long chat : chats) {
+            Optional<TGroup> tGroup = chatService.get(chat);
+            if (tGroup.isPresent()) {
+                TGroup group = tGroup.get();
+                group.setRead_only(turnOnReadOnly);
+                chatService.save(group);
+                sendReadOnlyMessage(sender, group.getChat_id(), turnOnReadOnly);
+            }
+        }
+        sendReadOnlyMessage(sender, update.getCallbackQuery().getFrom().getId(), turnOnReadOnly);
         return State.CHANGING_READ_ONLY;
+    }
+
+    private void sendReadOnlyMessage(AbsSender sender, long chatId, boolean turnOnReadOnly) throws TelegramApiException {
+        SendMessage message = SendMessage.builder()
+                .text("Режим 'Только чтение' " + (turnOnReadOnly ? "включен" : "выключен"))
+                .chatId(String.valueOf(chatId))
+                .build();
+        sender.execute(message);
     }
 }

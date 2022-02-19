@@ -27,6 +27,12 @@ public class TelegramUtils {
         return update.getMessage().getChatId();
     }
 
+    public static String getUserName(Update update) {
+        if (update.hasCallbackQuery())
+            return update.getCallbackQuery().getFrom().getUserName();
+        return update.getMessage().getFrom().getUserName();
+    }
+
     public static void clearSession(Session session) {
         session.getAttributeKeys().forEach(session::removeAttribute);
         Stack<State> states = new Stack<>();

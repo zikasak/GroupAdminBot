@@ -1,7 +1,6 @@
 package bot;
 import bot.commands.DefaultCommand;
 import bot.control.StateController;
-import bot.control.states.State;
 import bot.handlers.chatHandlers.ChatHandler;
 import bot.utils.TelegramUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -23,8 +22,6 @@ import org.telegram.telegrambots.session.ChatIdConverter;
 import org.telegram.telegrambots.session.DefaultChatIdConverter;
 import org.telegram.telegrambots.session.DefaultChatSessionContext;
 
-import java.util.HashSet;
-import java.util.Stack;
 
 
 @Component
@@ -74,10 +71,8 @@ public class GroupAdminBot extends TelegramLongPollingCommandBot {
     }
 
     private void proceedControlMessage(Update update) {
-        Message message = update.getMessage();
-        Session chatSession;
         this.chatIdConverter.setSessionId(getChatId(update));
-        chatSession = this.getSession(message);
+        Session chatSession = this.getSession(update);
         this.stateController.onUpdateReceived(this, update, chatSession);
     }
 
@@ -87,11 +82,13 @@ public class GroupAdminBot extends TelegramLongPollingCommandBot {
         return null;
     }
 
-    public Session getSession(Message message) {
+    public Session getSession(Update update) {
         try {
             return this.sessionManager.getSession(this.chatIdConverter);
         } catch (UnknownSessionException var4) {
-            SessionContext botSession = new DefaultChatSessionContext(message.getChatId(), message.getFrom().getUserName());
+            Long chatId = TelegramUtils.getChatId(update);
+            String userName = TelegramUtils.getUserName(update);
+            SessionContext botSession = new DefaultChatSessionContext(chatId, userName);
             Session session = this.sessionManager.start(botSession);
             TelegramUtils.clearSession(session);
             return session;
