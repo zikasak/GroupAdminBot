@@ -42,6 +42,12 @@ public class SelectChatHandler implements StateHandler {
     public void handleStateEnter(AbsSender sender, Update update, Session session) throws TelegramApiException {
         Long userId = update.getCallbackQuery().getFrom().getId();
         Set<TGroup> groupList = chatService.getGroupList(userId);
+        Set<Long> chats = (Set<Long>) session.getAttribute(Constants.CHOSEN_CHATS);
+        groupList.stream().filter((group) -> chats.contains(group.getChat_id()))
+                .forEach((group) -> {
+                    String chat_name = group.getChat_name();
+                    group.setChat_name("*"+chat_name);
+                });
         List<InlineKeyboardButton> buttons = groupList.stream()
                 .map(SelectChatHandler::createKeyboardButton).toList();
         List<List<InlineKeyboardButton>> keyboard = TelegramUtils.getKeyboardWithBackButton(buttons, 3);
