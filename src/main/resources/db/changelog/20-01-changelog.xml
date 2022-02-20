@@ -67,5 +67,9 @@
             </column>
         </createTable>
     </changeSet>
-
+    <changeSet id="20022022-01" author="IoffeGL">
+        <addColumn tableName="t_groups_admins">
+            <column name="additional" type="boolean" defaultValue="false"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

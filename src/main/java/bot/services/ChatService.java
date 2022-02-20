@@ -2,12 +2,11 @@ package bot.services;
 
 import bot.entities.TDeclaredCommand;
 import bot.entities.TGroup;
+import bot.entities.TGroupAdmin;
 import bot.entities.TMutedUser;
 import org.telegram.telegrambots.meta.api.objects.User;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public interface ChatService {
 
@@ -22,4 +21,10 @@ public interface ChatService {
     Set<TDeclaredCommand> getCommands(TGroup tGroup);
 
     void addAdministrator(TGroup tGroup, User user);
+
+    void addAdministrator(TGroup tGroup, User user, boolean additional);
+
+    Set<TGroupAdmin> getAdministratorList(TGroup tGroup);
+
+    void setAdministratorList(Collection<TGroupAdmin> admins);
 }

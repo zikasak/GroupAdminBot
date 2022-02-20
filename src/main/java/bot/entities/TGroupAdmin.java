@@ -9,5 +9,5 @@ public class TGroupAdmin implements Serializable {
 
     private Long user_id;
     private Long chat_id;
-
+    private boolean additional;
 }

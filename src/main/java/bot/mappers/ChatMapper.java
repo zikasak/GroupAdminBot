@@ -1,10 +1,9 @@
 package bot.mappers;
 
 import bot.entities.TGroup;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
+import bot.entities.TGroupAdmin;
+import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
 import org.telegram.telegrambots.meta.api.objects.User;
 
 import java.util.Optional;
@@ -51,7 +50,21 @@ public interface ChatMapper {
 
     @Insert("""
             INSERT INTO t_groups_admins
-            (chat_id, user_id)
-            VALUES (#{tGroup.chat_id}, #{user.id}) ON CONFLICT DO NOTHING""")
-    void addAdministrator(@Param("tGroup") TGroup tGroup, @Param("user") User user);
+            (chat_id, user_id, additional)
+            VALUES (#{tGroup.chat_id}, #{user.user_id}, #{user.additional}) ON CONFLICT DO UPDATE
+            SET additional = #{user.additional};""")
+    void addAdministrator(@Param("tGroup") TGroup tGroup, @Param("user") TGroupAdmin tGroupAdmin );
+
+    @Select("""
+            SELECT chat_id chat_id,
+            user_id user_id,
+            additional additional
+            FROM t_groups_admins
+            WHERE chat_id = #{tGroup.chat_id};""")
+    Set<TGroupAdmin> getAdministrators(@Param("tGroup") TGroup tGroup);
+
+    @Delete("""
+            DELETE FROM t_groups_admins
+            WHERE chat_id = #{admin.chat_id} and user_id = #{admin.user_id}""")
+    void deleteAdministrator(@Param("admin") TGroupAdmin groupAdmin);
 }

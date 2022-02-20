@@ -2,6 +2,7 @@ package bot.services;
 
 import bot.entities.TDeclaredCommand;
 import bot.entities.TGroup;
+import bot.entities.TGroupAdmin;
 import bot.entities.TMutedUser;
 import bot.mappers.ChatMapper;
 import bot.mappers.CommandMapper;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.objects.User;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -53,6 +55,24 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public void addAdministrator(TGroup tGroup, User user) {
-        chatMapper.addAdministrator(tGroup, user);
+       addAdministrator(tGroup, user, false);
+    }
+
+    @Override
+    public void addAdministrator(TGroup tGroup, User user, boolean additional) {
+        TGroupAdmin tGroupAdmin = new TGroupAdmin();
+        tGroupAdmin.setAdditional(additional);
+        tGroupAdmin.setUser_id(user.getId());
+        chatMapper.addAdministrator(tGroup, tGroupAdmin);
+    }
+
+    @Override
+    public Set<TGroupAdmin> getAdministratorList(TGroup tGroup) {
+        return chatMapper.getAdministrators(tGroup);
+    }
+
+    @Override
+    public void setAdministratorList(Collection<TGroupAdmin> groupAdmin) {
+//        chatMapper.deleteAdministrator(groupAdmin);
     }
 }
