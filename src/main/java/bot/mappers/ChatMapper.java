@@ -4,8 +4,8 @@ import bot.entities.TGroup;
 import bot.entities.TGroupAdmin;
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.annotations.Param;
-import org.telegram.telegrambots.meta.api.objects.User;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
@@ -51,20 +51,32 @@ public interface ChatMapper {
     @Insert("""
             INSERT INTO t_groups_admins
             (chat_id, user_id, additional)
-            VALUES (#{tGroup.chat_id}, #{user.user_id}, #{user.additional}) ON CONFLICT DO UPDATE
-            SET additional = #{user.additional};""")
-    void addAdministrator(@Param("tGroup") TGroup tGroup, @Param("user") TGroupAdmin tGroupAdmin );
+            VALUES (#{chat_id}, #{user_id}, #{additional}) ON CONFLICT (chat_id, user_id) DO UPDATE
+            SET additional = #{additional};""")
+    void addAdministrator(@Param("chat_id") Long chatId, @Param("user_id") Long userId, @Param("additional") boolean additional );
 
     @Select("""
             SELECT chat_id chat_id,
             user_id user_id,
             additional additional
             FROM t_groups_admins
-            WHERE chat_id = #{tGroup.chat_id};""")
-    Set<TGroupAdmin> getAdministrators(@Param("tGroup") TGroup tGroup);
+            WHERE chat_id = #{chat_id};""")
+    Set<TGroupAdmin> getAdministrators(@Param("chat_id") Long chatId);
+
+    @Insert({"<script>",
+            """
+            DELETE FROM t_groups_admins
+            WHERE chat_id = #{chatId} and additional = false;
+            """,
+            """
+            insert into t_groups_admins(chat_id, user_id) values
+            """,
+            "<foreach collection='groupAdmin' item='user' index='index' open='(' separator = '),(' close=')' >#{chatId},#{user}</foreach>",
+            "</script>"})
+    void setAdministratorList(@Param("chatId") Long chatId, @Param("groupAdmin") Collection<Long> groupAdmin);
 
     @Delete("""
             DELETE FROM t_groups_admins
-            WHERE chat_id = #{admin.chat_id} and user_id = #{admin.user_id}""")
-    void deleteAdministrator(@Param("admin") TGroupAdmin groupAdmin);
+            WHERE chat_id = #{chatId} and user_id = #{userId};""")
+    void deleteAdministrator(@Param("chatId") Long chatId, @Param("userId") Long userId);
 }

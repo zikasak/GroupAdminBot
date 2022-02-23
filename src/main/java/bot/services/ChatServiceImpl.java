@@ -55,24 +55,26 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public void addAdministrator(TGroup tGroup, User user) {
-       addAdministrator(tGroup, user, false);
+       addAdministrator(tGroup.getChat_id(), user.getId(), false);
     }
 
     @Override
-    public void addAdministrator(TGroup tGroup, User user, boolean additional) {
-        TGroupAdmin tGroupAdmin = new TGroupAdmin();
-        tGroupAdmin.setAdditional(additional);
-        tGroupAdmin.setUser_id(user.getId());
-        chatMapper.addAdministrator(tGroup, tGroupAdmin);
+    public void addAdministrator(Long tGroup, Long user, boolean additional) {
+        chatMapper.addAdministrator(tGroup, user, additional);
     }
 
     @Override
-    public Set<TGroupAdmin> getAdministratorList(TGroup tGroup) {
-        return chatMapper.getAdministrators(tGroup);
+    public Set<TGroupAdmin> getAdministratorList(Long chatId) {
+        return chatMapper.getAdministrators(chatId);
     }
 
     @Override
-    public void setAdministratorList(Collection<TGroupAdmin> groupAdmin) {
-//        chatMapper.deleteAdministrator(groupAdmin);
+    public void setAdministratorList(Long chatId, Collection<Long> groupAdmin) {
+        chatMapper.setAdministratorList(chatId, groupAdmin);
+    }
+
+    @Override
+    public void deleteAdministrator(Long chatId, Long userId) {
+        chatMapper.deleteAdministrator(chatId, userId);
     }
 }

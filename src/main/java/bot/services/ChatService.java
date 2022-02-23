@@ -22,9 +22,11 @@ public interface ChatService {
 
     void addAdministrator(TGroup tGroup, User user);
 
-    void addAdministrator(TGroup tGroup, User user, boolean additional);
+    void addAdministrator(Long tGroup, Long user, boolean additional);
 
-    Set<TGroupAdmin> getAdministratorList(TGroup tGroup);
+    Set<TGroupAdmin> getAdministratorList(Long chatId);
 
-    void setAdministratorList(Collection<TGroupAdmin> admins);
+    void setAdministratorList(Long chatId, Collection<Long> admins);
+
+    void deleteAdministrator(Long chatId, Long userId);
 }
